@@ -13,6 +13,8 @@ import {
   cilPuzzle,
   cilSpeedometer,
   cilStar,
+  cilPeople,
+  cilCalendarCheck,
 } from '@coreui/icons'
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
 
@@ -26,6 +28,22 @@ const _nav = [
       color: 'info',
       text: 'NEW',
     },
+  },
+  {
+    component: CNavTitle,
+    name: 'Modules',
+  },
+  {
+    component: CNavItem,
+    name: 'Users',
+    to: '/modules/users',
+    icon: <CIcon icon={cilPeople} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: 'Events',
+    to: '/modules/events',
+    icon: <CIcon icon={cilCalendarCheck} customClassName="nav-icon" />,
   },
   {
     component: CNavTitle,
