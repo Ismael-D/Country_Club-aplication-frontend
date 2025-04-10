@@ -43,8 +43,8 @@ import {
   cilUserFemale,
 } from '@coreui/icons'
 
-import avatar1 from 'src/assets/images/avatars/1.jpg'
-import avatar2 from 'src/assets/images/avatars/2.jpg'
+import avatar1 from 'src/assets/images/avatars/1.jpeg'
+import avatar2 from 'src/assets/images/avatars/2.jpeg'
 import avatar3 from 'src/assets/images/avatars/3.jpg'
 import avatar4 from 'src/assets/images/avatars/4.jpg'
 import avatar5 from 'src/assets/images/avatars/5.jpg'
@@ -89,10 +89,13 @@ const Users = () => {
     {
       avatar: { src: avatar1, status: 'success' },
       user: {
-        name: 'Liliana Sanchez',
+        name: 'Ismael Sanchez',
         new: true,
         registered: 'Jan 1, 2023',
         role: 'Admin',
+        email: 'ismael.sanchez@example.com',
+        dni: 'V-12345678', // DNI agregado
+        status: 'Active', // Status agregado
       },
       country: { name: 'USA', flag: cifUs },
       usage: {
@@ -106,10 +109,13 @@ const Users = () => {
     {
       avatar: { src: avatar2, status: 'danger' },
       user: {
-        name: 'Avram Tarasios',
+        name: 'Liliana Sanchez',
         new: false,
         registered: 'Jan 1, 2023',
-        role: 'Manager',
+        role: 'Admin',
+        email: 'liliana.sanchez@example.com',
+        dni: 'V-87654321', // DNI agregado
+        status: 'Inactive', // Status agregado
       },
       country: { name: 'Brazil', flag: cifBr },
       usage: {
@@ -121,20 +127,16 @@ const Users = () => {
       activity: '5 minutes ago',
     },
     {
-      avatar: { src: avatar3, status: 'warning' },
-      user: { name: 'Quintin Ed', new: true, registered: 'Jan 1, 2023' },
-      country: { name: 'India', flag: cifIn },
-      usage: {
-        value: 74,
-        period: 'Jun 11, 2023 - Jul 10, 2023',
-        color: 'warning',
-      },
-      payment: { name: 'Stripe', icon: cibCcStripe },
-      activity: '1 hour ago',
-    },
-    {
       avatar: { src: avatar4, status: 'secondary' },
-      user: { name: 'Enéas Kwadwo', new: true, registered: 'Jan 1, 2023' },
+      user: {
+        name: 'Enéas Kwadwo',
+        new: true,
+        registered: 'Jan 1, 2023',
+        role: 'Manager',
+        email: 'eneas.kwadwo@example.com',
+        dni: 'V-11223344', // DNI agregado
+        status: 'Active', // Status agregado
+      },
       country: { name: 'France', flag: cifFr },
       usage: {
         value: 98,
@@ -145,27 +147,15 @@ const Users = () => {
       activity: 'Last month',
     },
     {
-      avatar: { src: avatar5, status: 'success' },
-      user: {
-        name: 'Agapetus Tadeáš',
-        new: true,
-        registered: 'Jan 1, 2023',
-      },
-      country: { name: 'Spain', flag: cifEs },
-      usage: {
-        value: 22,
-        period: 'Jun 11, 2023 - Jul 10, 2023',
-        color: 'primary',
-      },
-      payment: { name: 'Google Wallet', icon: cibCcApplePay },
-      activity: 'Last week',
-    },
-    {
       avatar: { src: avatar6, status: 'danger' },
       user: {
         name: 'Friderik Dávid',
         new: true,
         registered: 'Jan 1, 2023',
+        role: 'Event Coordinator',
+        email: 'friderik.david@example.com',
+        dni: 'V-55667788', // DNI agregado
+        status: 'Pending', // Status agregado
       },
       country: { name: 'Poland', flag: cifPl },
       usage: {
@@ -182,53 +172,72 @@ const Users = () => {
     <>
       <CCard className="mb-4">
         <CCardBody>
-          <CTable align="middle" className="mb-0 border" hover responsive>
-            <CTableHead className="text-nowrap">
-              <CTableRow>
-                <CTableHeaderCell className="bg-body-tertiary text-center">
-                  <CIcon icon={cilPeople} />
-                </CTableHeaderCell>
-                <CTableHeaderCell className="bg-body-tertiary">User</CTableHeaderCell>
-                <CTableHeaderCell className="bg-body-tertiary">Roles</CTableHeaderCell>
-                <CTableHeaderCell className="bg-body-tertiary">Usage</CTableHeaderCell>
-                <CTableHeaderCell className="bg-body-tertiary">Activity</CTableHeaderCell>
-              </CTableRow>
-            </CTableHead>
-            <CTableBody>
-              {tableExample.map((item, index) => (
-                <CTableRow v-for="item in tableItems" key={index}>
-                  <CTableDataCell className="text-center">
-                    <CAvatar size="md" src={item.avatar.src} status={item.avatar.status} />
-                  </CTableDataCell>
-                  <CTableDataCell>
-                    <div>{item.user.name}</div>
-                    <div className="small text-body-secondary text-nowrap">
-                      <span>{item.user.new ? 'New' : 'Recurring'}</span> | Registered:{' '}
-                      {item.user.registered}
-                    </div>
-                  </CTableDataCell>
-                  <CTableDataCell>
-                    <div>{item.user.role}</div>
-                  </CTableDataCell>
-                  <CTableDataCell>
-                    <div className="d-flex justify-content-between text-nowrap">
-                      <div className="fw-semibold">{item.usage.value}%</div>
-                      <div className="ms-3">
-                        <small className="text-body-secondary">{item.usage.period}</small>
-                      </div>
-                    </div>
-                    <CProgress thin color={item.usage.color} value={item.usage.value} />
-                  </CTableDataCell>
-                  <CTableDataCell>
-                    <div className="small text-body-secondary text-nowrap">Last login</div>
-                    <div className="fw-semibold text-nowrap">{item.activity}</div>
-                  </CTableDataCell>
-                </CTableRow>
-              ))}
-            </CTableBody>
-          </CTable>
+          
         </CCardBody>
       </CCard>
+      <CTable
+        align="middle"
+        className="mb-0 border table-rounded"
+        hover
+        responsive
+        style={{ width: '100%' }} // Ajusta el ancho al 100% del contenedor
+      >
+        <CTableHead className="text-nowrap">
+          <CTableRow>
+            <CTableHeaderCell className="bg-body-tertiary text-center">
+              <CIcon icon={cilPeople} />
+            </CTableHeaderCell>
+            <CTableHeaderCell className="bg-body-tertiary">User</CTableHeaderCell>
+            <CTableHeaderCell className="bg-body-tertiary">Email</CTableHeaderCell>
+            <CTableHeaderCell className="bg-body-tertiary">DNI</CTableHeaderCell>
+            <CTableHeaderCell className="bg-body-tertiary">Status</CTableHeaderCell>
+            <CTableHeaderCell className="bg-body-tertiary">Roles</CTableHeaderCell>
+            <CTableHeaderCell className="bg-body-tertiary">Usage</CTableHeaderCell>
+            <CTableHeaderCell className="bg-body-tertiary">Activity</CTableHeaderCell>
+          </CTableRow>
+        </CTableHead>
+        <CTableBody>
+          {tableExample.map((item, index) => (
+            <CTableRow key={index}>
+              <CTableDataCell className="text-center">
+                <CAvatar size="md" src={item.avatar.src} status={item.avatar.status} />
+              </CTableDataCell>
+              <CTableDataCell>
+                <div>{item.user.name}</div>
+                <div className="small text-body-secondary text-nowrap">
+                  <span>{item.user.new ? 'New' : 'Recurring'}</span> | Registered:{' '}
+                  {item.user.registered}
+                </div>
+              </CTableDataCell>
+              <CTableDataCell>
+                <div>{item.user.email}</div>
+              </CTableDataCell>
+              <CTableDataCell>
+                <div>{item.user.dni}</div>
+              </CTableDataCell>
+              <CTableDataCell>
+                <div>{item.user.status}</div>
+              </CTableDataCell>
+              <CTableDataCell>
+                <div>{item.user.role}</div>
+              </CTableDataCell>
+              <CTableDataCell>
+                <div className="d-flex justify-content-between text-nowrap">
+                  <div className="fw-semibold">{item.usage.value}%</div>
+                  <div className="ms-3">
+                    <small className="text-body-secondary">{item.usage.period}</small>
+                  </div>
+                </div>
+                <CProgress thin color={item.usage.color} value={item.usage.value} />
+              </CTableDataCell>
+              <CTableDataCell>
+                <div className="small text-body-secondary text-nowrap">Last login</div>
+                <div className="fw-semibold text-nowrap">{item.activity}</div>
+              </CTableDataCell>
+            </CTableRow>
+          ))}
+        </CTableBody>
+      </CTable>
     </>
   )
 }
