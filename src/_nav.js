@@ -15,6 +15,9 @@ import {
   cilStar,
   cilPeople,
   cilCalendarCheck,
+  cilUser,
+  cilContact,
+  cilBrushAlt,
 } from '@coreui/icons'
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
 
@@ -24,10 +27,12 @@ const _nav = [
     name: 'Dashboard',
     to: '/dashboard',
     icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
-    badge: {
-      color: 'info',
-      text: 'NEW',
-    },
+  },
+  {
+    component: CNavItem,
+    name: 'Users',
+    to: '/users',
+    icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
   },
   {
     component: CNavTitle,
@@ -35,9 +40,15 @@ const _nav = [
   },
   {
     component: CNavItem,
-    name: 'Users',
-    to: '/modules/users',
+    name: 'Employees',
+    to: '/modules/employees',
     icon: <CIcon icon={cilPeople} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: 'Members',
+    to: '/modules/members',
+    icon: <CIcon icon={cilContact} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
@@ -45,6 +56,13 @@ const _nav = [
     to: '/modules/events',
     icon: <CIcon icon={cilCalendarCheck} customClassName="nav-icon" />,
   },
+  {
+    component: CNavItem,
+    name: 'Maintenance',
+    to: '/modules/maintenance',
+    icon: <CIcon icon={cilBrushAlt} customClassName="nav-icon" />,
+  },
+  /*
   {
     component: CNavTitle,
     name: 'Theme',
@@ -427,6 +445,7 @@ const _nav = [
       text: 'NEW',
     },
   },
+  */
   {
     component: CNavTitle,
     name: 'Extras',
@@ -458,12 +477,14 @@ const _nav = [
       },
     ],
   },
+  /*
   {
     component: CNavItem,
     name: 'Docs',
     href: 'https://coreui.io/react/docs/templates/installation/',
     icon: <CIcon icon={cilDescription} customClassName="nav-icon" />,
   },
+  */
 ]
 
 export default _nav

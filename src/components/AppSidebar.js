@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux'
 
 import {
   CCloseButton,
+  CImage,
   CSidebar,
   CSidebarBrand,
   CSidebarFooter,
@@ -16,7 +17,6 @@ import { AppSidebarNav } from './AppSidebarNav'
 import { logo } from 'src/assets/brand/logo'
 import { sygnet } from 'src/assets/brand/sygnet'
 
-// sidebar nav config
 import navigation from '../_nav'
 
 const AppSidebar = () => {
@@ -26,7 +26,7 @@ const AppSidebar = () => {
 
   return (
     <CSidebar
-      className="border-end"
+      className="border-end "
       colorScheme="dark"
       position="fixed"
       unfoldable={unfoldable}
@@ -35,11 +35,13 @@ const AppSidebar = () => {
         dispatch({ type: 'set', sidebarShow: visible })
       }}
     >
-      <CSidebarHeader className="border-bottom">
-        <CSidebarBrand to="/">
-          <CIcon customClassName="sidebar-brand-full" icon={logo} height={32} />
-          <CIcon customClassName="sidebar-brand-narrow" icon={sygnet} height={32} />
-        </CSidebarBrand>
+      <CSidebarHeader>
+        <CImage
+          align="center"
+          src="src\assets\images\imagen_2025-04-09_222352977-modified.png"
+          height={55}
+        />
+        
         <CCloseButton
           className="d-lg-none"
           dark

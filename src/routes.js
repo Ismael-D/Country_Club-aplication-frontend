@@ -3,10 +3,14 @@ import React from 'react'
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 const Colors = React.lazy(() => import('./views/theme/colors/Colors'))
 const Typography = React.lazy(() => import('./views/theme/typography/Typography'))
+const Users = React.lazy(() => import('./views/users/Users'))
 
 // Modules
-const Users = React.lazy(() => import('./views/modules/users/Users'))
 const Events = React.lazy(() => import('./views/modules/events/Events'))
+const Employees = React.lazy(() => import('./views/modules/employees/Employees'))
+const Maintenance = React.lazy(() => import('./views/modules/maintenance/Maintenance'))
+const Members = React.lazy(() => import('./views/modules/members/Members'))
+
 
 
 // Base
@@ -59,9 +63,12 @@ const Widgets = React.lazy(() => import('./views/widgets/Widgets'))
 const routes = [
   { path: '/', exact: true, name: 'Home' },
   { path: '/dashboard', name: 'Dashboard', element: Dashboard },
+  { path: '/users', name: 'Users', element: Users },
   { path: '/modules',name: 'Modules', element: Users, exact: true },
-  { path: '/modules/users', name: 'Users', element: Users },
   {path: '/modules/events', name: 'Events', element: Events},
+  {path: '/modules/employees', name: 'Employees', element: Employees},
+  {path: '/modules/maintenance', name: 'Maintenance', element: Maintenance},
+  {path: '/modules/members', name: 'Members', element: Members},
   { path: '/theme', name: 'Theme', element: Colors, exact: true },
   { path: '/theme/colors', name: 'Colors', element: Colors },
   { path: '/theme/typography', name: 'Typography', element: Typography },
