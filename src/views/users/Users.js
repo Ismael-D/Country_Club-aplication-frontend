@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import classNames from 'classnames'
 
 import {
@@ -18,74 +18,31 @@ import {
   CTableHead,
   CTableHeaderCell,
   CTableRow,
+  CModal,
+  CModalHeader,
+  CModalBody,
+  CModalFooter,
+  CForm,
+  CFormInput,
+  CFormLabel,
+  CDropdown,
+  CDropdownToggle,
+  CDropdownMenu,
+  CDropdownItem,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import {
-  cibCcAmex,
-  cibCcApplePay,
-  cibCcMastercard,
-  cibCcPaypal,
-  cibCcStripe,
-  cibCcVisa,
-  cibGoogle,
-  cibFacebook,
-  cibLinkedin,
-  cifBr,
-  cifEs,
-  cifFr,
-  cifIn,
-  cifPl,
-  cifUs,
-  cibTwitter,
-  cilCloudDownload,
   cilPeople,
-  cilUser,
-  cilUserFemale,
+  cilPencil,
 } from '@coreui/icons'
 
 import avatar1 from 'src/assets/images/avatars/1.jpeg'
 import avatar2 from 'src/assets/images/avatars/2.jpeg'
-import avatar3 from 'src/assets/images/avatars/3.jpg'
 import avatar4 from 'src/assets/images/avatars/4.jpg'
-import avatar5 from 'src/assets/images/avatars/5.jpg'
 import avatar6 from 'src/assets/images/avatars/6.jpg'
 
-import WidgetsBrand from 'src/views/widgets/WidgetsBrand'
-import WidgetsDropdown from 'src/views/widgets/WidgetsDropdown'
-import MainChart from 'src/views/dashboard/MainChart'
-
 const Users = () => {
-  const progressExample = [
-    { title: 'Visits', value: '29.703 Users', percent: 40, color: 'success' },
-    { title: 'Unique', value: '24.093 Users', percent: 20, color: 'info' },
-    { title: 'Pageviews', value: '78.706 Views', percent: 60, color: 'warning' },
-    { title: 'New Users', value: '22.123 Users', percent: 80, color: 'danger' },
-    { title: 'Bounce Rate', value: 'Average Rate', percent: 40.15, color: 'primary' },
-  ]
-
-  const progressGroupExample1 = [
-    { title: 'Monday', value1: 34, value2: 78 },
-    { title: 'Tuesday', value1: 56, value2: 94 },
-    { title: 'Wednesday', value1: 12, value2: 67 },
-    { title: 'Thursday', value1: 43, value2: 91 },
-    { title: 'Friday', value1: 22, value2: 73 },
-    { title: 'Saturday', value1: 53, value2: 82 },
-    { title: 'Sunday', value1: 9, value2: 69 },
-  ]
-
-  const progressGroupExample2 = [
-    { title: 'Male', icon: cilUser, value: 53 },
-    { title: 'Female', icon: cilUserFemale, value: 43 },
-  ]
-
-  const progressGroupExample3 = [
-    { title: 'Organic Search', icon: cibGoogle, percent: 56, value: '191,235' },
-    { title: 'Facebook', icon: cibFacebook, percent: 15, value: '51,223' },
-    { title: 'Twitter', icon: cibTwitter, percent: 11, value: '37,564' },
-    { title: 'LinkedIn', icon: cibLinkedin, percent: 8, value: '27,319' },
-  ]
-
-  const tableExample = [
+  const [tableExample, setTableExample] = useState([
     {
       avatar: { src: avatar1, status: 'success' },
       user: {
@@ -94,57 +51,36 @@ const Users = () => {
         registered: 'Jan 1, 2023',
         role: 'Admin',
         email: 'ismael.sanchez@example.com',
-        dni: 'V-12345678', // DNI agregado
-        status: 'Active', // Status agregado
+        tlf: '0412-3456789',
+        dni: 'V-12345678',
+        status: 'Active',
       },
-      country: { name: 'USA', flag: cifUs },
-      usage: {
-        value: 50,
-        period: 'Jun 11, 2023 - Jul 10, 2023',
-        color: 'success',
-      },
-      payment: { name: 'Mastercard', icon: cibCcMastercard },
-      activity: '10 sec ago',
     },
     {
-      avatar: { src: avatar2, status: 'danger' },
+      avatar: { src: avatar2, status: 'success' },
       user: {
         name: 'Liliana Sanchez',
         new: false,
         registered: 'Jan 1, 2023',
-        role: 'Admin',
+        role: 'Manager',
         email: 'liliana.sanchez@example.com',
-        dni: 'V-87654321', // DNI agregado
-        status: 'Inactive', // Status agregado
+        tlf: '0412-9876543',
+        dni: 'V-87654321',
+        status: 'Inactive',
       },
-      country: { name: 'Brazil', flag: cifBr },
-      usage: {
-        value: 22,
-        period: 'Jun 11, 2023 - Jul 10, 2023',
-        color: 'info',
-      },
-      payment: { name: 'Visa', icon: cibCcVisa },
-      activity: '5 minutes ago',
     },
     {
-      avatar: { src: avatar4, status: 'secondary' },
+      avatar: { src: avatar4, status: 'success' },
       user: {
         name: 'Enéas Kwadwo',
         new: true,
         registered: 'Jan 1, 2023',
         role: 'Manager',
         email: 'eneas.kwadwo@example.com',
-        dni: 'V-11223344', // DNI agregado
-        status: 'Active', // Status agregado
+        tlf: '0412-1234567',
+        dni: 'V-11223344',
+        status: 'Suspended',
       },
-      country: { name: 'France', flag: cifFr },
-      usage: {
-        value: 98,
-        period: 'Jun 11, 2023 - Jul 10, 2023',
-        color: 'danger',
-      },
-      payment: { name: 'PayPal', icon: cibCcPaypal },
-      activity: 'Last month',
     },
     {
       avatar: { src: avatar6, status: 'danger' },
@@ -154,90 +90,185 @@ const Users = () => {
         registered: 'Jan 1, 2023',
         role: 'Event Coordinator',
         email: 'friderik.david@example.com',
-        dni: 'V-55667788', // DNI agregado
-        status: 'Pending', // Status agregado
+        tlf: '0412-7654321',
+        dni: 'V-55667788',
+        status: 'Inactive',
       },
-      country: { name: 'Poland', flag: cifPl },
-      usage: {
-        value: 43,
-        period: 'Jun 11, 2023 - Jul 10, 2023',
-        color: 'success',
-      },
-      payment: { name: 'Amex', icon: cibCcAmex },
-      activity: 'Last week',
     },
-  ]
+  ])
+
+  const [visible, setVisible] = useState(false) // Estado para mostrar/ocultar el modal
+  const [currentUser, setCurrentUser] = useState(null) // Usuario seleccionado para editar
+
+  const handleModifyUser = (index) => {
+    setCurrentUser({ ...tableExample[index], index }) // Guarda el usuario actual y su índice
+    setVisible(true) // Muestra el modal
+  }
+
+  const handleSaveUser = () => {
+    const updatedTable = [...tableExample]
+    updatedTable[currentUser.index] = currentUser // Actualiza el usuario en la tabla
+    setTableExample(updatedTable) // Actualiza el estado de la tabla
+    setVisible(false) // Cierra el modal
+  }
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target
+    setCurrentUser((prev) => ({
+      ...prev,
+      user: {
+        ...prev.user,
+        [name]: value,
+      },
+    }))
+  }
+
+  const handleStatusChange = (index, newStatus) => {
+    const updatedTable = [...tableExample]
+    updatedTable[index].user.status = newStatus
+    updatedTable[index].avatar.status =
+      newStatus === 'Active' ? 'success' : newStatus === 'Inactive' ? 'secondary' : 'danger'
+    setTableExample(updatedTable)
+  }
 
   return (
     <>
       <CCard className="mb-4">
+        <CCardHeader>Users</CCardHeader>
         <CCardBody>
-          
+          <CTable align="middle" className="mb-0 border" hover responsive style={{ width: '100%' }}>
+            <CTableHead className="text-nowrap">
+              <CTableRow>
+                <CTableHeaderCell className="bg-body-tertiary text-center">
+                  <CIcon icon={cilPeople} />
+                </CTableHeaderCell>
+                <CTableHeaderCell className="bg-body-tertiary">Name</CTableHeaderCell>
+                <CTableHeaderCell className="bg-body-tertiary">DNI</CTableHeaderCell>
+                <CTableHeaderCell className="bg-body-tertiary">Roles</CTableHeaderCell>
+                <CTableHeaderCell className="bg-body-tertiary">Contact</CTableHeaderCell>
+                <CTableHeaderCell className="bg-body-tertiary">Actions</CTableHeaderCell>
+              </CTableRow>
+            </CTableHead>
+            <CTableBody>
+              {tableExample.map((item, index) => (
+                <CTableRow key={index}>
+                  <CTableDataCell className="text-center">
+                    <CAvatar size="md" src={item.avatar.src} status={item.avatar.status} />
+                  </CTableDataCell>
+                  <CTableDataCell>
+                    <div>{item.user.name}</div>
+                    <div className="small text-body-secondary text-nowrap">
+                      <span>Status</span>:{' '}{item.user.status}
+                    </div>
+                  </CTableDataCell>
+                  
+                  <CTableDataCell>
+                    <div>{item.user.dni}</div>
+                  </CTableDataCell>
+                  <CTableDataCell>
+                    <div>{item.user.role}</div>
+                  </CTableDataCell>
+                  <CTableDataCell>
+                    <div>{item.user.email}</div>
+                    <div className="small text-body-secondary text-nowrap">
+                      <span>TLF</span>:{' '}{item.user.tlf}
+                    </div>
+                  </CTableDataCell>
+                  <CTableDataCell>
+                    <CButton color="success" size="sm" onClick={() => handleModifyUser(index)}>
+                      <CIcon icon={cilPencil} />
+                    </CButton>{' '}
+                    <CDropdown>
+                      <CDropdownToggle color="secondary" size="sm">
+                        Change Status
+                      </CDropdownToggle>
+                      <CDropdownMenu>
+                        <CDropdownItem onClick={() => handleStatusChange(index, 'Active')}>
+                          Active
+                        </CDropdownItem>
+                        <CDropdownItem onClick={() => handleStatusChange(index, 'Inactive')}>
+                          Inactive
+                        </CDropdownItem>
+                        <CDropdownItem onClick={() => handleStatusChange(index, 'Suspended')}>
+                          Suspended
+                        </CDropdownItem>
+                      </CDropdownMenu>
+                    </CDropdown>
+                  </CTableDataCell>
+                </CTableRow>
+              ))}
+            </CTableBody>
+          </CTable>
         </CCardBody>
       </CCard>
-      <CTable
-        align="middle"
-        className="mb-0 border table-rounded"
-        hover
-        responsive
-        style={{ width: '100%' }} // Ajusta el ancho al 100% del contenedor
-      >
-        <CTableHead className="text-nowrap">
-          <CTableRow>
-            <CTableHeaderCell className="bg-body-tertiary text-center">
-              <CIcon icon={cilPeople} />
-            </CTableHeaderCell>
-            <CTableHeaderCell className="bg-body-tertiary">User</CTableHeaderCell>
-            <CTableHeaderCell className="bg-body-tertiary">Email</CTableHeaderCell>
-            <CTableHeaderCell className="bg-body-tertiary">DNI</CTableHeaderCell>
-            <CTableHeaderCell className="bg-body-tertiary">Status</CTableHeaderCell>
-            <CTableHeaderCell className="bg-body-tertiary">Roles</CTableHeaderCell>
-            <CTableHeaderCell className="bg-body-tertiary">Usage</CTableHeaderCell>
-            <CTableHeaderCell className="bg-body-tertiary">Activity</CTableHeaderCell>
-          </CTableRow>
-        </CTableHead>
-        <CTableBody>
-          {tableExample.map((item, index) => (
-            <CTableRow key={index}>
-              <CTableDataCell className="text-center">
-                <CAvatar size="md" src={item.avatar.src} status={item.avatar.status} />
-              </CTableDataCell>
-              <CTableDataCell>
-                <div>{item.user.name}</div>
-                <div className="small text-body-secondary text-nowrap">
-                  <span>{item.user.new ? 'New' : 'Recurring'}</span> | Registered:{' '}
-                  {item.user.registered}
-                </div>
-              </CTableDataCell>
-              <CTableDataCell>
-                <div>{item.user.email}</div>
-              </CTableDataCell>
-              <CTableDataCell>
-                <div>{item.user.dni}</div>
-              </CTableDataCell>
-              <CTableDataCell>
-                <div>{item.user.status}</div>
-              </CTableDataCell>
-              <CTableDataCell>
-                <div>{item.user.role}</div>
-              </CTableDataCell>
-              <CTableDataCell>
-                <div className="d-flex justify-content-between text-nowrap">
-                  <div className="fw-semibold">{item.usage.value}%</div>
-                  <div className="ms-3">
-                    <small className="text-body-secondary">{item.usage.period}</small>
-                  </div>
-                </div>
-                <CProgress thin color={item.usage.color} value={item.usage.value} />
-              </CTableDataCell>
-              <CTableDataCell>
-                <div className="small text-body-secondary text-nowrap">Last login</div>
-                <div className="fw-semibold text-nowrap">{item.activity}</div>
-              </CTableDataCell>
-            </CTableRow>
-          ))}
-        </CTableBody>
-      </CTable>
+
+      {/* Modal para editar usuario */}
+      <CModal visible={visible} onClose={() => setVisible(false)}>
+        <CModalHeader>Edit User</CModalHeader>
+        <CModalBody>
+          {currentUser && (
+            <CForm>
+              <div className="mb-3">
+                <CFormLabel>Name</CFormLabel>
+                <CFormInput
+                  type="text"
+                  name="name"
+                  value={currentUser.user.name}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div className="mb-3">
+                <CFormLabel>Email</CFormLabel>
+                <CFormInput
+                  type="email"
+                  name="email"
+                  value={currentUser.user.email}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div className="mb-3">
+                <CFormLabel>Phone</CFormLabel>
+                <CFormInput
+                  type="text"
+                  name="tlf"
+                  value={currentUser.user.tlf}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div className="mb-3">
+                <CFormLabel>DNI</CFormLabel>
+                <CFormInput
+                  type="text"
+                  name="dni"
+                  value={currentUser.user.dni}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div className="mb-3">
+                <CFormLabel>Role</CFormLabel>
+                <select
+                  className="form-select"
+                  name="role"
+                  value={currentUser.user.role}
+                  onChange={handleInputChange}
+                >
+                  <option value="Admin">Admin</option>
+                  <option value="Manager">Manager</option>
+                  <option value="Event Coordinator">Event Coordinator</option>
+                </select>
+              </div>
+            </CForm>
+          )}
+        </CModalBody>
+        <CModalFooter>
+          <CButton color="secondary" onClick={() => setVisible(false)}>
+            Cancel
+          </CButton>
+          <CButton color="primary" onClick={handleSaveUser}>
+            Save
+          </CButton>
+        </CModalFooter>
+      </CModal>
     </>
   )
 }
