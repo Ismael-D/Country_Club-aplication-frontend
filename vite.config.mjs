@@ -28,6 +28,12 @@ export default defineConfig(() => {
           '.js': 'jsx',
         },
       },
+      include: [
+        '@fullcalendar/react',
+        '@fullcalendar/daygrid',
+        '@fullcalendar/timegrid',
+        '@fullcalendar/interaction',
+      ],
     },
     plugins: [react()],
     resolve: {

@@ -40,9 +40,9 @@ const _nav = [
   },
   {
     component: CNavItem,
-    name: 'Employees',
-    to: '/modules/employees',
-    icon: <CIcon icon={cilPeople} customClassName="nav-icon" />,
+    name: 'Events',
+    to: '/modules/events',
+    icon: <CIcon icon={cilCalendarCheck} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
@@ -52,9 +52,9 @@ const _nav = [
   },
   {
     component: CNavItem,
-    name: 'Events',
-    to: '/modules/events',
-    icon: <CIcon icon={cilCalendarCheck} customClassName="nav-icon" />,
+    name: 'Employees',
+    to: '/modules/employees',
+    icon: <CIcon icon={cilPeople} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
