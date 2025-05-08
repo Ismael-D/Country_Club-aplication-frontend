@@ -28,7 +28,7 @@ const Inventory = () => {
   const [showModal, setShowModal] = useState(false)
   const [currentItem, setCurrentItem] = useState(null)
 
-  // Fetch inventory items from json-server
+
   useEffect(() => {
     fetch('http://localhost:3001/inventory')
       .then((response) => response.json())
@@ -51,7 +51,7 @@ const Inventory = () => {
 
   const handleSaveItem = () => {
     if (currentItem.id) {
-      // Update existing item
+  
       fetch(`http://localhost:3001/inventory/${currentItem.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },

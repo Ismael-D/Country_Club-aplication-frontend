@@ -26,12 +26,12 @@ import { useNavigate } from 'react-router-dom'
 const Employees = () => {
   const [employees, setEmployees] = useState([])
   const [filter, setFilter] = useState('')
-  const [filterType, setFilterType] = useState('name') // Tipo de filtro seleccionado
+  const [filterType, setFilterType] = useState('name') 
   const [showModal, setShowModal] = useState(false)
   const [currentEmployee, setCurrentEmployee] = useState(null)
   const navigate = useNavigate()
 
-  // Fetch employees from json-server
+ 
   useEffect(() => {
     fetch('http://localhost:3001/employees')
       .then((response) => response.json())

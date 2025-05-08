@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import {
   CAvatar,
   CButton,
@@ -8,7 +8,6 @@ import {
   CTable,
   CTableBody,
   CTableDataCell,
-  CTableHead,
   CTableHeaderCell,
   CTableRow,
   CModal,
@@ -34,9 +33,9 @@ const Users = () => {
 
   
   useEffect(() => {
-    fetch('http://localhost:3001/users')
+    fetch('http://localhost:3002/users')
       .then((response) => response.json())
-      .then((data) => setUsers(data))
+      .then((data) => setUsers())
       .catch((error) => console.error('Error fetching users:', error))
   }, [])
 
@@ -80,7 +79,7 @@ const Users = () => {
     }
   }
 
-  const handleDeleteUser = (id) => {
+  const handleDeletUser = (id) => {
     const confirmDelete = window.confirm('Are you sure you want to delete this user?')
     if (confirmDelete) {
       fetch(`http://localhost:3001/users/${id}`, {
@@ -197,7 +196,7 @@ const Users = () => {
                           Suspended
                         </CDropdownItem>
                       </CDropdownMenu>
-                    </CDropdown>{' '}
+                    </>{' '}
                     <CButton color="danger" size="sm" onClick={() => handleDeleteUser(user.id)}>
                       Delete
                     </CButton>
