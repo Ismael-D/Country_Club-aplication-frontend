@@ -1,14 +1,29 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { formatDate } from '@fullcalendar/core'
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
-import { INITIAL_EVENTS, createEventId } from './event-utils'
 
 export default function DemoApp() {
   const [weekendsVisible, setWeekendsVisible] = useState(true)
-  const [currentEvents, setCurrentEvents] = useState([])
+  const [currentEvents, setCurrentEvents] = useState([
+    {
+      id: '1',
+      title: 'Sample Event',
+      start: '2025-05-08T10:00:00',
+      end: '2025-05-08T12:00:00',
+      allDay: false
+    }
+  ])
+
+  // Fetch events from json-server
+  useEffect(() => {
+    fetch('http://localhost:3001/events') // Cambiar a puerto 3001
+      .then((response) => response.json())
+      .then((data) => setCurrentEvents(data))
+      .catch((error) => console.error('Error fetching events:', error))
+  }, [])
 
   function handleWeekendsToggle() {
     setWeekendsVisible(!weekendsVisible)
@@ -21,19 +36,42 @@ export default function DemoApp() {
     calendarApi.unselect() // clear date selection
 
     if (title) {
-      calendarApi.addEvent({
-        id: createEventId(),
+      const newEvent = {
+        id: String(Date.now()), // Generate a unique ID
         title,
         start: selectInfo.startStr,
         end: selectInfo.endStr,
         allDay: selectInfo.allDay
+      }
+
+      // Add event to json-server
+      fetch('http://localhost:3001/events', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newEvent)
       })
+        .then(() => {
+          setCurrentEvents((prevEvents) => [...prevEvents, newEvent])
+        })
+        .catch((error) => console.error('Error adding event:', error))
     }
   }
 
   function handleEventClick(clickInfo) {
     if (confirm(`Are you sure you want to delete the event '${clickInfo.event.title}'`)) {
-      clickInfo.event.remove()
+      const eventId = clickInfo.event.id
+
+      // Remove event from json-server
+      fetch(`http://localhost:3001/events/${eventId}`, {
+        method: 'DELETE'
+      })
+        .then(() => {
+          clickInfo.event.remove()
+          setCurrentEvents((prevEvents) =>
+            prevEvents.filter((event) => event.id !== eventId)
+          )
+        })
+        .catch((error) => console.error('Error deleting event:', error))
     }
   }
 
@@ -62,16 +100,11 @@ export default function DemoApp() {
           selectMirror={true}
           dayMaxEvents={true}
           weekends={weekendsVisible}
-          initialEvents={INITIAL_EVENTS} // alternatively, use the `events` setting to fetch from a feed
+          events={currentEvents} // Use events from state
           select={handleDateSelect}
           eventContent={renderEventContent} // custom render function
           eventClick={handleEventClick}
           eventsSet={handleEvents} // called after events are initialized/added/changed/removed
-          /* you can update a remote database when these fire:
-          eventAdd={function(){}}
-          eventChange={function(){}}
-          eventRemove={function(){}}
-          */
         />
       </div>
     </div>
@@ -123,7 +156,7 @@ function Sidebar({ weekendsVisible, handleWeekendsToggle, currentEvents }) {
 function SidebarEvent({ event }) {
   return (
     <li key={event.id}>
-      <b>{formatDate(event.start, {year: 'numeric', month: 'short', day: 'numeric'})}</b>
+      <b>{formatDate(event.start, { year: 'numeric', month: 'short', day: 'numeric' })}</b>
       <i>{event.title}</i>
     </li>
   )

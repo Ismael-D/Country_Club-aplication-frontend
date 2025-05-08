@@ -1,0 +1,71 @@
+{
+  "events": [
+    {
+      "id": "1",
+      "title": "All-day event",
+      "start": "2025-05-07"
+    },
+    {
+      "id": "2",
+      "title": "Timed event",
+      "start": "2025-05-07T12:00:00"
+    }
+  ],
+  "members": [
+    {
+      "id": "1",
+      "nombres": "Juan",
+      "apellidos": "Pérez",
+      "dni": "12345678",
+      "correo": "juan.perez@example.com",
+      "telefono": "123456789",
+      "fechaPago": "2025-05-01",
+      "deuda": "0",
+      "estado": "al_dia"
+    },
+    {
+      "id": "2",
+      "nombres": "María",
+      "apellidos": "González",
+      "dni": "87654321",
+      "correo": "maria.gonzalez@example.com",
+      "telefono": "987654321",
+      "fechaPago": "2025-04-15",
+      "deuda": "50",
+      "estado": "con_deuda"
+    },
+    {
+      "id": "3",
+      "nombres": "Carlos",
+      "apellidos": "Ramírez",
+      "dni": "11223344",
+      "correo": "carlos.ramirez@example.com",
+      "telefono": "1122334455",
+      "fechaPago": "2025-03-20",
+      "deuda": "100",
+      "estado": "con_deuda"
+    },
+    {
+      "id": "4",
+      "nombres": "Ana",
+      "apellidos": "López",
+      "dni": "55667788",
+      "correo": "ana.lopez@example.com",
+      "telefono": "5566778899",
+      "fechaPago": "2025-05-05",
+      "deuda": "0",
+      "estado": "al_dia"
+    },
+    {
+      "id": "d84f",
+      "nombres": "ismael",
+      "apellidos": " garcia",
+      "dni": "5555555",
+      "correo": "dsdsd@mgmgmg",
+      "telefono": "354325",
+      "fechaPago": "2025-05-07",
+      "deuda": "0",
+      "estado": "al_dia"
+    }
+  ]
+}
