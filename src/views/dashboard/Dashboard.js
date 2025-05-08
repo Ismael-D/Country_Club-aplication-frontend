@@ -15,83 +15,155 @@ import {
 } from '@coreui/react'
 
 const Dashboard = () => {
-  const [users, setUsers] = useState([])
+  const [members, setMembers] = useState([])
+  const [employees, setEmployees] = useState([])
+  const [inventory, setInventory] = useState([])
 
   // Fetch data from db.json
   useEffect(() => {
-    fetch('http://localhost:3001/users') // Cambia la URL si es necesario
+    fetch('http://localhost:3001/members')
       .then((response) => response.json())
-      .then((data) => setUsers(data))
-      .catch((error) => console.error('Error fetching users:', error))
+      .then((data) => setMembers(data))
+      .catch((error) => console.error('Error fetching members:', error))
+
+    fetch('http://localhost:3001/employees')
+      .then((response) => response.json())
+      .then((data) => setEmployees(data))
+      .catch((error) => console.error('Error fetching employees:', error))
+
+    fetch('http://localhost:3001/inventory')
+      .then((response) => response.json())
+      .then((data) => setInventory(data))
+      .catch((error) => console.error('Error fetching inventory:', error))
   }, [])
 
-  // Estadísticas calculadas
-  const totalUsers = users.length
-  const newUsers = users.filter((user) => user.new).length
-  const recurringUsers = totalUsers - newUsers
-  const averageUsage = (
-    users.reduce((sum, user) => sum + (user.usage?.value || 0), 0) / totalUsers || 0
-  ).toFixed(2)
+  // Estadísticas de miembros
+  const totalMembers = members.length
+  const membersAlDia = members.filter((member) => member.estado === 'al_dia').length
+  const membersConDeuda = members.filter((member) => member.estado === 'con_deuda').length
 
-  const paymentMethods = users.reduce((acc, user) => {
-    const method = user.payment?.name || 'Unknown'
-    acc[method] = (acc[method] || 0) + 1
+  // Estadísticas de empleados
+  const totalEmployees = employees.length
+  const averageSalary = (
+    employees.reduce((sum, employee) => sum + parseFloat(employee.salario || 0), 0) /
+    totalEmployees || 0
+  ).toFixed(2)
+  const employeesByPosition = employees.reduce((acc, employee) => {
+    acc[employee.posicion] = (acc[employee.posicion] || 0) + 1
     return acc
   }, {})
+
+  // Estadísticas de inventario
+  const totalInventoryItems = inventory.length
+  const inventoryByState = inventory.reduce(
+    (acc, item) => {
+      acc[item.estado] = (acc[item.estado] || 0) + 1
+      return acc
+    },
+    { Nuevo: 0, Usado: 0, Dañado: 0 }
+  )
+  const inventoryByMovement = inventory.reduce(
+    (acc, item) => {
+      acc[item.tipoMovimiento] = (acc[item.tipoMovimiento] || 0) + 1
+      return acc
+    },
+    { Entrada: 0, Salida: 0 }
+  )
 
   return (
     <>
       <CRow>
-        <CCol xs={12} md={6} xl={4}>
+        {/* Estadísticas de miembros */}
+        <CCol xs={12} md={4}>
           <CCard className="mb-4">
-            <CCardHeader>Total Users</CCardHeader>
+            <CCardHeader>Total Miembros</CCardHeader>
             <CCardBody>
-              <h4>{totalUsers}</h4>
-              <CProgress thin color="primary" value={(totalUsers / 100) * 100} />
+              <h4>{totalMembers}</h4>
+              <CProgress thin color="primary" value={(totalMembers / 100) * 100} />
             </CCardBody>
           </CCard>
         </CCol>
-        <CCol xs={12} md={6} xl={4}>
+        <CCol xs={12} md={4}>
           <CCard className="mb-4">
-            <CCardHeader>New Users</CCardHeader>
+            <CCardHeader>Miembros al Día</CCardHeader>
             <CCardBody>
-              <h4>{newUsers}</h4>
-              <CProgress thin color="success" value={(newUsers / totalUsers) * 100} />
+              <h4>{membersAlDia}</h4>
+              <CProgress thin color="success" value={(membersAlDia / totalMembers) * 100} />
             </CCardBody>
           </CCard>
         </CCol>
-        <CCol xs={12} md={6} xl={4}>
+        <CCol xs={12} md={4}>
           <CCard className="mb-4">
-            <CCardHeader>Recurring Users</CCardHeader>
+            <CCardHeader>Miembros con Deuda</CCardHeader>
             <CCardBody>
-              <h4>{recurringUsers}</h4>
-              <CProgress thin color="warning" value={(recurringUsers / totalUsers) * 100} />
+              <h4>{membersConDeuda}</h4>
+              <CProgress thin color="danger" value={(membersConDeuda / totalMembers) * 100} />
             </CCardBody>
           </CCard>
         </CCol>
       </CRow>
 
       <CRow>
+        {/* Estadísticas de empleados */}
         <CCol xs={12} md={6}>
           <CCard className="mb-4">
-            <CCardHeader>Average Usage</CCardHeader>
+            <CCardHeader>Total Empleados</CCardHeader>
             <CCardBody>
-              <h4>{averageUsage}%</h4>
-              <CProgress thin color="info" value={averageUsage} />
+              <h4>{totalEmployees}</h4>
+              <CProgress thin color="info" value={(totalEmployees / 100) * 100} />
             </CCardBody>
           </CCard>
         </CCol>
         <CCol xs={12} md={6}>
           <CCard className="mb-4">
-            <CCardHeader>Payment Methods</CCardHeader>
+            <CCardHeader>Salario Promedio</CCardHeader>
             <CCardBody>
-              {Object.entries(paymentMethods).map(([method, count], index) => (
+              <h4>${averageSalary}</h4>
+            </CCardBody>
+          </CCard>
+        </CCol>
+      </CRow>
+
+      <CRow>
+        {/* Estadísticas de inventario */}
+        <CCol xs={12} md={4}>
+          <CCard className="mb-4">
+            <CCardHeader>Total Artículos</CCardHeader>
+            <CCardBody>
+              <h4>{totalInventoryItems}</h4>
+              <CProgress thin color="primary" value={(totalInventoryItems / 100) * 100} />
+            </CCardBody>
+          </CCard>
+        </CCol>
+        <CCol xs={12} md={4}>
+          <CCard className="mb-4">
+            <CCardHeader>Artículos por Estado</CCardHeader>
+            <CCardBody>
+              {Object.entries(inventoryByState).map(([state, count], index) => (
                 <div key={index} className="mb-2">
-                  <strong>{method}</strong>: {count} users
+                  <strong>{state}</strong>: {count}
                   <CProgress
                     thin
                     color="secondary"
-                    value={(count / totalUsers) * 100}
+                    value={(count / totalInventoryItems) * 100}
+                    className="mt-1"
+                  />
+                </div>
+              ))}
+            </CCardBody>
+          </CCard>
+        </CCol>
+        <CCol xs={12} md={4}>
+          <CCard className="mb-4">
+            <CCardHeader>Movimientos de Inventario</CCardHeader>
+            <CCardBody>
+              {Object.entries(inventoryByMovement).map(([movement, count], index) => (
+                <div key={index} className="mb-2">
+                  <strong>{movement}</strong>: {count}
+                  <CProgress
+                    thin
+                    color="warning"
+                    value={(count / totalInventoryItems) * 100}
                     className="mt-1"
                   />
                 </div>
@@ -100,34 +172,6 @@ const Dashboard = () => {
           </CCard>
         </CCol>
       </CRow>
-
-      <CCard className="mb-4">
-        <CCardHeader>Users Table</CCardHeader>
-        <CCardBody>
-          <CTable align="middle" className="mb-0 border" hover responsive>
-            <CTableHead>
-              <CTableRow>
-                <CTableHeaderCell>User</CTableHeaderCell>
-                <CTableHeaderCell>Country</CTableHeaderCell>
-                <CTableHeaderCell>Usage</CTableHeaderCell>
-                <CTableHeaderCell>Payment Method</CTableHeaderCell>
-                <CTableHeaderCell>Activity</CTableHeaderCell>
-              </CTableRow>
-            </CTableHead>
-            <CTableBody>
-              {users.map((user, index) => (
-                <CTableRow key={index}>
-                  <CTableDataCell>{user.name || 'Unknown'}</CTableDataCell>
-                  <CTableDataCell>{user.country?.name || 'Unknown'}</CTableDataCell>
-                  <CTableDataCell>{user.usage?.value || 0}%</CTableDataCell>
-                  <CTableDataCell>{user.payment?.name || 'Unknown'}</CTableDataCell>
-                  <CTableDataCell>{user.activity || 'N/A'}</CTableDataCell>
-                </CTableRow>
-              ))}
-            </CTableBody>
-          </CTable>
-        </CCardBody>
-      </CCard>
     </>
   )
 }
