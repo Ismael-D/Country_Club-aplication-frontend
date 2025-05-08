@@ -9,6 +9,7 @@ const Employees = React.lazy(() => import('./views/modules/employees/Employees')
 const Maintenance = React.lazy(() => import('./views/modules/maintenance/Maintenance'))
 const Members = React.lazy(() => import('./views/modules/members/Members'))
 const inventory = React.lazy(() => import('./views/modules/inventory/Inventory')) 
+const events = React.lazy(() => import('./views/modules/members/events'))
 
 
 const routes = [
@@ -21,6 +22,7 @@ const routes = [
   {path: '/modules/maintenance', name: 'Maintenance', element: Maintenance},
   {path: '/modules/members', name: 'Members', element: Members},
   {path: '/modules/inventory', name: 'Inventory', element: inventory},
+  {path: '/modules/members/events', name: 'Events', element: events},
 ]
 
 export default routes

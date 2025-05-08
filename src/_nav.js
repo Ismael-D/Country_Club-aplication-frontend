@@ -18,6 +18,7 @@ import {
   cilUser,
   cilContact,
   cilBrushAlt,
+  cilClipboard,
 } from '@coreui/icons'
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
 
@@ -61,6 +62,13 @@ const _nav = [
     name: 'Maintenance',
     to: '/modules/maintenance',
     icon: <CIcon icon={cilBrushAlt} customClassName="nav-icon" />,
+  },
+
+  {
+    component: CNavItem,
+    name: 'Inventory',
+    to: '/modules/inventory',
+    icon: <CIcon icon={cilClipboard} customClassName="nav-icon" />,
   },
   
   {

@@ -17,21 +17,43 @@ import {
   CForm,
   CFormInput,
   CFormLabel,
+  CFormSelect,
 } from '@coreui/react'
+import CIcon from '@coreui/icons-react'
+import { cilPencil, cilUserUnfollow, cilCheckCircle } from '@coreui/icons'
+import { useNavigate } from 'react-router-dom' // Importar useNavigate
 
 const MembersApp = () => {
   const [members, setMembers] = useState([])
   const [filter, setFilter] = useState('')
+  const [filterType, setFilterType] = useState('name') // Tipo de filtro seleccionado
   const [showModal, setShowModal] = useState(false)
   const [currentMember, setCurrentMember] = useState(null)
+  const navigate = useNavigate() // Hook para manejar la navegación
 
   // Fetch members from json-server
   useEffect(() => {
     fetch('http://localhost:3001/members')
       .then((response) => response.json())
-      .then((data) => setMembers(data))
+      .then((data) => {
+        const updatedMembers = data.map((member) => ({
+          ...member,
+          deuda: calculateDebt(member.fechaPago),
+        }))
+        setMembers(updatedMembers)
+      })
       .catch((error) => console.error('Error fetching members:', error))
   }, [])
+
+  const calculateDebt = (fechaPago) => {
+    const lastPaymentDate = new Date(fechaPago)
+    const today = new Date()
+    const monthsDifference =
+      today.getFullYear() * 12 +
+      today.getMonth() -
+      (lastPaymentDate.getFullYear() * 12 + lastPaymentDate.getMonth())
+    return monthsDifference > 0 ? monthsDifference * 50 : 0 // $50 por mes de deuda
+  }
 
   const handleAddMember = () => {
     setCurrentMember({
@@ -80,6 +102,24 @@ const MembersApp = () => {
     }
   }
 
+  const handleMarkAsPaid = (id) => {
+    const today = new Date().toISOString().split('T')[0] // Fecha actual en formato YYYY-MM-DD
+    const updatedMembers = members.map((member) =>
+      member.id === id
+        ? { ...member, fechaPago: today, deuda: 0, estado: 'al_dia' }
+        : member
+    )
+    setMembers(updatedMembers)
+
+    // Actualizar en el servidor
+    const memberToUpdate = updatedMembers.find((member) => member.id === id)
+    fetch(`http://localhost:3001/members/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(memberToUpdate),
+    }).catch((error) => console.error('Error updating member:', error))
+  }
+
   const handleDeleteMember = (id) => {
     fetch(`http://localhost:3001/members/${id}`, {
       method: 'DELETE',
@@ -95,53 +135,80 @@ const MembersApp = () => {
     setCurrentMember((prev) => ({ ...prev, [name]: value }))
   }
 
-  const filteredMembers = members.filter((member) =>
-    `${member.nombres} ${member.apellidos}`
-      .toLowerCase()
-      .includes(filter.toLowerCase())
-  )
+  const handleNavigateToEvents = (id) => {
+    navigate(`/modules/members/events`) // Redirigir a la ruta con el ID del miembro
+  }
+
+  // Filtrar miembros según el tipo de filtro seleccionado
+  const filteredMembers = members.filter((member) => {
+    const searchValue = filter.toLowerCase()
+    switch (filterType) {
+      case 'name':
+        return `${member.nombres} ${member.apellidos}`.toLowerCase().includes(searchValue)
+      case 'dni':
+        return member.dni.toLowerCase().includes(searchValue)
+      case 'deuda':
+        return member.deuda.toString().includes(searchValue)
+      case 'fechaPago':
+        return member.fechaPago.toLowerCase().includes(searchValue)
+      default:
+        return true
+    }
+  })
 
   return (
     <>
       <CCard className="mb-4">
         <CCardHeader>Lista de Miembros</CCardHeader>
         <CCardBody>
-          <div className="mb-3">
+          <div className="mb-3 d-flex gap-2">
+            <CFormSelect
+              value={filterType}
+              onChange={(e) => setFilterType(e.target.value)}
+              className="w-auto"
+            >
+              <option value="name">Buscar por Nombre</option>
+              <option value="dni">Buscar por Cédula</option>
+              <option value="deuda">Buscar por Deuda</option>
+              <option value="fechaPago">Buscar por Fecha de Pago</option>
+            </CFormSelect>
             <CFormInput
               type="text"
-              placeholder="Buscar por nombre o apellido"
+              placeholder="Escribe para buscar..."
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
             />
-            <CButton color="primary" className="mt-2" onClick={handleAddMember}>
-              Agregar Miembro
+            <CButton color="primary" onClick={handleAddMember}>
+              Add
             </CButton>
           </div>
           <CTable align="middle" className="mb-0 border" hover responsive>
             <CTableHead>
               <CTableRow>
-                <CTableHeaderCell>Nombres</CTableHeaderCell>
-                <CTableHeaderCell>Apellidos</CTableHeaderCell>
+                <CTableHeaderCell>Name</CTableHeaderCell>
                 <CTableHeaderCell>DNI</CTableHeaderCell>
-                <CTableHeaderCell>Correo</CTableHeaderCell>
-                <CTableHeaderCell>Teléfono</CTableHeaderCell>
-                <CTableHeaderCell>Fecha de Pago</CTableHeaderCell>
-                <CTableHeaderCell>Deuda</CTableHeaderCell>
+                <CTableHeaderCell>Contact</CTableHeaderCell>
+                <CTableHeaderCell>Last payment</CTableHeaderCell>
                 <CTableHeaderCell>Estado</CTableHeaderCell>
+                <CTableHeaderCell>Deuda</CTableHeaderCell>
                 <CTableHeaderCell>Acciones</CTableHeaderCell>
+                <CTableHeaderCell>Eventos</CTableHeaderCell> {/* Nueva columna */}
               </CTableRow>
             </CTableHead>
             <CTableBody>
               {filteredMembers.map((member) => (
                 <CTableRow key={member.id}>
-                  <CTableDataCell>{member.nombres}</CTableDataCell>
-                  <CTableDataCell>{member.apellidos}</CTableDataCell>
+                  <CTableDataCell>{`${member.nombres} ${member.apellidos}`}</CTableDataCell>
                   <CTableDataCell>{member.dni}</CTableDataCell>
-                  <CTableDataCell>{member.correo}</CTableDataCell>
-                  <CTableDataCell>{member.telefono}</CTableDataCell>
+                  <CTableDataCell>
+                    <div>{member.correo}</div>
+                    <div className="small text-body-secondary">
+                      <span>Teléfono:</span> {member.telefono}
+                    </div>
+                  </CTableDataCell>
                   <CTableDataCell>{member.fechaPago}</CTableDataCell>
-                  <CTableDataCell>{member.deuda}</CTableDataCell>
                   <CTableDataCell>{member.estado}</CTableDataCell>
+                  <CTableDataCell>{member.deuda}</CTableDataCell>
                   <CTableDataCell>
                     <CButton
                       color="success"
@@ -151,14 +218,30 @@ const MembersApp = () => {
                         setShowModal(true)
                       }}
                     >
-                      Editar
+                      <CIcon icon={cilPencil} />
+                    </CButton>{' '}
+                    <CButton
+                      color="info"
+                      size="sm"
+                      onClick={() => handleMarkAsPaid(member.id)}
+                    >
+                      <CIcon icon={cilCheckCircle} /> Pago
                     </CButton>{' '}
                     <CButton
                       color="danger"
                       size="sm"
                       onClick={() => handleDeleteMember(member.id)}
                     >
-                      Eliminar
+                      <CIcon icon={cilUserUnfollow} />
+                    </CButton>
+                  </CTableDataCell>
+                  <CTableDataCell>
+                    <CButton
+                      color="primary"
+                      size="sm"
+                      onClick={() => handleNavigateToEvents(member.id)}
+                    >
+                      Ver Eventos
                     </CButton>
                   </CTableDataCell>
                 </CTableRow>

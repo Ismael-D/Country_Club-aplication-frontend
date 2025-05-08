@@ -1,17 +1,10 @@
-import React, { useState } from 'react'
-import classNames from 'classnames'
-
+import React, { useState, useEffect } from 'react'
 import {
   CAvatar,
   CButton,
-  CButtonGroup,
   CCard,
   CCardBody,
-  CCardFooter,
   CCardHeader,
-  CCol,
-  CProgress,
-  CRow,
   CTable,
   CTableBody,
   CTableDataCell,
@@ -31,104 +24,91 @@ import {
   CDropdownItem,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import {
-  cilPeople,
-  cilPencil,
-} from '@coreui/icons'
-
-import avatar1 from 'src/assets/images/avatars/1.jpeg'
-import avatar2 from 'src/assets/images/avatars/2.jpeg'
-import avatar4 from 'src/assets/images/avatars/4.jpg'
-import avatar6 from 'src/assets/images/avatars/6.jpg'
+import { cilPeople, cilPencil } from '@coreui/icons'
 
 const Users = () => {
-  const [tableExample, setTableExample] = useState([
-    {
-      avatar: { src: avatar1, status: 'success' },
-      user: {
-        name: 'Ismael Sanchez',
-        new: true,
-        registered: 'Jan 1, 2023',
-        role: 'Admin',
-        email: 'ismael.sanchez@example.com',
-        tlf: '0412-3456789',
-        dni: 'V-12345678',
-        status: 'Active',
-      },
-    },
-    {
-      avatar: { src: avatar2, status: 'success' },
-      user: {
-        name: 'Liliana Sanchez',
-        new: false,
-        registered: 'Jan 1, 2023',
-        role: 'Manager',
-        email: 'liliana.sanchez@example.com',
-        tlf: '0412-9876543',
-        dni: 'V-87654321',
-        status: 'Inactive',
-      },
-    },
-    {
-      avatar: { src: avatar4, status: 'success' },
-      user: {
-        name: 'Enéas Kwadwo',
-        new: true,
-        registered: 'Jan 1, 2023',
-        role: 'Manager',
-        email: 'eneas.kwadwo@example.com',
-        tlf: '0412-1234567',
-        dni: 'V-11223344',
-        status: 'Suspended',
-      },
-    },
-    {
-      avatar: { src: avatar6, status: 'danger' },
-      user: {
-        name: 'Friderik Dávid',
-        new: true,
-        registered: 'Jan 1, 2023',
-        role: 'Event Coordinator',
-        email: 'friderik.david@example.com',
-        tlf: '0412-7654321',
-        dni: 'V-55667788',
-        status: 'Inactive',
-      },
-    },
-  ])
-
+  const [users, setUsers] = useState([])
   const [visible, setVisible] = useState(false) // Estado para mostrar/ocultar el modal
   const [currentUser, setCurrentUser] = useState(null) // Usuario seleccionado para editar
 
-  const handleModifyUser = (index) => {
-    setCurrentUser({ ...tableExample[index], index }) // Guarda el usuario actual y su índice
+  // Fetch users from json-server
+  useEffect(() => {
+    fetch('http://localhost:3001/users')
+      .then((response) => response.json())
+      .then((data) => setUsers(data))
+      .catch((error) => console.error('Error fetching users:', error))
+  }, [])
+
+  const handleModifyUser = (user) => {
+    setCurrentUser(user) // Guarda el usuario actual
     setVisible(true) // Muestra el modal
   }
 
   const handleSaveUser = () => {
-    const updatedTable = [...tableExample]
-    updatedTable[currentUser.index] = currentUser // Actualiza el usuario en la tabla
-    setTableExample(updatedTable) // Actualiza el estado de la tabla
-    setVisible(false) // Cierra el modal
+    if (currentUser.id) {
+      // Actualizar usuario existente
+      fetch(`http://localhost:3001/users/${currentUser.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(currentUser),
+      })
+        .then(() => {
+          setUsers((prev) =>
+            prev.map((user) => (user.id === currentUser.id ? currentUser : user))
+          )
+          setVisible(false) // Cierra el modal
+        })
+        .catch((error) => console.error('Error updating user:', error))
+    } else {
+      // Agregar nuevo usuario
+      fetch('http://localhost:3001/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(currentUser),
+      })
+        .then((response) => response.json())
+        .then((newUser) => {
+          setUsers((prev) => [...prev, newUser])
+          setVisible(false) // Cierra el modal
+        })
+        .catch((error) => console.error('Error adding user:', error))
+    }
+  }
+
+  const handleDeleteUser = (id) => {
+    fetch(`http://localhost:3001/users/${id}`, {
+      method: 'DELETE',
+    })
+      .then(() => {
+        setUsers((prev) => prev.filter((user) => user.id !== id))
+      })
+      .catch((error) => console.error('Error deleting user:', error))
   }
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
     setCurrentUser((prev) => ({
       ...prev,
-      user: {
-        ...prev.user,
-        [name]: value,
-      },
+      [name]: value,
     }))
   }
 
-  const handleStatusChange = (index, newStatus) => {
-    const updatedTable = [...tableExample]
-    updatedTable[index].user.status = newStatus
-    updatedTable[index].avatar.status =
-      newStatus === 'Active' ? 'success' : newStatus === 'Inactive' ? 'secondary' : 'danger'
-    setTableExample(updatedTable)
+  const handleStatusChange = (id, newStatus) => {
+    const updatedUser = users.find((user) => user.id === id)
+    if (updatedUser) {
+      updatedUser.status = newStatus
+      fetch(`http://localhost:3001/users/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedUser),
+      })
+        .then(() => {
+          setUsers((prev) =>
+            prev.map((user) => (user.id === id ? updatedUser : user))
+          )
+        })
+        .catch((error) => console.error('Error updating status:', error))
+    }
   }
 
   return (
@@ -136,46 +116,41 @@ const Users = () => {
       <CCard className="mb-4">
         <CCardHeader>Users</CCardHeader>
         <CCardBody>
-          <CTable align="middle" className="mb-0 border" hover responsive style={{ width: '100%' }}>
-            <CTableHead className="text-nowrap">
+          <CTable align="middle" className="mb-0 border" hover responsive>
+            <CTableHead>
               <CTableRow>
-                <CTableHeaderCell className="bg-body-tertiary text-center">
+                <CTableHeaderCell className="text-center">
                   <CIcon icon={cilPeople} />
                 </CTableHeaderCell>
-                <CTableHeaderCell className="bg-body-tertiary">Name</CTableHeaderCell>
-                <CTableHeaderCell className="bg-body-tertiary">DNI</CTableHeaderCell>
-                <CTableHeaderCell className="bg-body-tertiary">Roles</CTableHeaderCell>
-                <CTableHeaderCell className="bg-body-tertiary">Contact</CTableHeaderCell>
-                <CTableHeaderCell className="bg-body-tertiary">Actions</CTableHeaderCell>
+                <CTableHeaderCell>Name</CTableHeaderCell>
+                <CTableHeaderCell>DNI</CTableHeaderCell>
+                <CTableHeaderCell>Role</CTableHeaderCell>
+                <CTableHeaderCell>Contact</CTableHeaderCell>
+                <CTableHeaderCell>Actions</CTableHeaderCell>
               </CTableRow>
             </CTableHead>
             <CTableBody>
-              {tableExample.map((item, index) => (
-                <CTableRow key={index}>
+              {users.map((user) => (
+                <CTableRow key={user.id}>
                   <CTableDataCell className="text-center">
-                    <CAvatar size="md" src={item.avatar.src} status={item.avatar.status} />
+                    <CAvatar size="md" src={user.avatar?.src || ''} status={user.avatar?.status || 'secondary'} />
                   </CTableDataCell>
                   <CTableDataCell>
-                    <div>{item.user.name}</div>
-                    <div className="small text-body-secondary text-nowrap">
-                      <span>Status</span>:{' '}{item.user.status}
+                    <div>{user.name}</div>
+                    <div className="small text-body-secondary">
+                      <span>Status:</span> {user.status}
                     </div>
                   </CTableDataCell>
-                  
+                  <CTableDataCell>{user.dni}</CTableDataCell>
+                  <CTableDataCell>{user.role}</CTableDataCell>
                   <CTableDataCell>
-                    <div>{item.user.dni}</div>
-                  </CTableDataCell>
-                  <CTableDataCell>
-                    <div>{item.user.role}</div>
-                  </CTableDataCell>
-                  <CTableDataCell>
-                    <div>{item.user.email}</div>
-                    <div className="small text-body-secondary text-nowrap">
-                      <span>TLF</span>:{' '}{item.user.tlf}
+                    <div>{user.email}</div>
+                    <div className="small text-body-secondary">
+                      <span>Phone:</span> {user.tlf}
                     </div>
                   </CTableDataCell>
                   <CTableDataCell>
-                    <CButton color="success" size="sm" onClick={() => handleModifyUser(index)}>
+                    <CButton color="success" size="sm" onClick={() => handleModifyUser(user)}>
                       <CIcon icon={cilPencil} />
                     </CButton>{' '}
                     <CDropdown>
@@ -183,17 +158,20 @@ const Users = () => {
                         Change Status
                       </CDropdownToggle>
                       <CDropdownMenu>
-                        <CDropdownItem onClick={() => handleStatusChange(index, 'Active')}>
+                        <CDropdownItem onClick={() => handleStatusChange(user.id, 'Active')}>
                           Active
                         </CDropdownItem>
-                        <CDropdownItem onClick={() => handleStatusChange(index, 'Inactive')}>
+                        <CDropdownItem onClick={() => handleStatusChange(user.id, 'Inactive')}>
                           Inactive
                         </CDropdownItem>
-                        <CDropdownItem onClick={() => handleStatusChange(index, 'Suspended')}>
+                        <CDropdownItem onClick={() => handleStatusChange(user.id, 'Suspended')}>
                           Suspended
                         </CDropdownItem>
                       </CDropdownMenu>
-                    </CDropdown>
+                    </CDropdown>{' '}
+                    <CButton color="danger" size="sm" onClick={() => handleDeleteUser(user.id)}>
+                      Delete
+                    </CButton>
                   </CTableDataCell>
                 </CTableRow>
               ))}
@@ -202,9 +180,9 @@ const Users = () => {
         </CCardBody>
       </CCard>
 
-      {/* Modal para editar usuario */}
+      {/* Modal para agregar/editar usuario */}
       <CModal visible={visible} onClose={() => setVisible(false)}>
-        <CModalHeader>Edit User</CModalHeader>
+        <CModalHeader>{currentUser?.id ? 'Edit User' : 'Add User'}</CModalHeader>
         <CModalBody>
           {currentUser && (
             <CForm>
@@ -213,7 +191,7 @@ const Users = () => {
                 <CFormInput
                   type="text"
                   name="name"
-                  value={currentUser.user.name}
+                  value={currentUser.name || ''}
                   onChange={handleInputChange}
                 />
               </div>
@@ -222,7 +200,7 @@ const Users = () => {
                 <CFormInput
                   type="email"
                   name="email"
-                  value={currentUser.user.email}
+                  value={currentUser.email || ''}
                   onChange={handleInputChange}
                 />
               </div>
@@ -231,7 +209,7 @@ const Users = () => {
                 <CFormInput
                   type="text"
                   name="tlf"
-                  value={currentUser.user.tlf}
+                  value={currentUser.tlf || ''}
                   onChange={handleInputChange}
                 />
               </div>
@@ -240,7 +218,7 @@ const Users = () => {
                 <CFormInput
                   type="text"
                   name="dni"
-                  value={currentUser.user.dni}
+                  value={currentUser.dni || ''}
                   onChange={handleInputChange}
                 />
               </div>
@@ -249,7 +227,7 @@ const Users = () => {
                 <select
                   className="form-select"
                   name="role"
-                  value={currentUser.user.role}
+                  value={currentUser.role || ''}
                   onChange={handleInputChange}
                 >
                   <option value="Admin">Admin</option>
