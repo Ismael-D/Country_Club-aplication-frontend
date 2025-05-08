@@ -36,10 +36,14 @@ const MembersApp = () => {
     fetch('http://localhost:3001/members')
       .then((response) => response.json())
       .then((data) => {
-        const updatedMembers = data.map((member) => ({
-          ...member,
-          deuda: calculateDebt(member.fechaPago),
-        }))
+        const updatedMembers = data.map((member) => {
+          const { deuda, estado } = calculateDebt(member.fechaPago)
+          return {
+            ...member,
+            deuda,
+            estado,
+          }
+        })
         setMembers(updatedMembers)
       })
       .catch((error) => console.error('Error fetching members:', error))
@@ -52,7 +56,11 @@ const MembersApp = () => {
       today.getFullYear() * 12 +
       today.getMonth() -
       (lastPaymentDate.getFullYear() * 12 + lastPaymentDate.getMonth())
-    return monthsDifference > 0 ? monthsDifference * 50 : 0 // $50 por mes de deuda
+    const deuda = monthsDifference > 0 ? monthsDifference * 50 : 0 // $50 por mes de deuda
+    return {
+      deuda,
+      estado: deuda > 0 ? 'con_deuda' : 'al_dia', // Determinar el estado
+    }
   }
 
   const handleAddMember = () => {
@@ -70,17 +78,24 @@ const MembersApp = () => {
   }
 
   const handleSaveMember = () => {
-    if (currentMember.id) {
+    const { deuda, estado } = calculateDebt(currentMember.fechaPago)
+    const updatedMember = {
+      ...currentMember,
+      deuda,
+      estado,
+    }
+
+    if (updatedMember.id) {
       // Update existing member
-      fetch(`http://localhost:3001/members/${currentMember.id}`, {
+      fetch(`http://localhost:3001/members/${updatedMember.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(currentMember),
+        body: JSON.stringify(updatedMember),
       })
         .then(() => {
           setMembers((prev) =>
             prev.map((member) =>
-              member.id === currentMember.id ? currentMember : member
+              member.id === updatedMember.id ? updatedMember : member
             )
           )
           setShowModal(false)
@@ -91,7 +106,7 @@ const MembersApp = () => {
       fetch('http://localhost:3001/members', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(currentMember),
+        body: JSON.stringify(updatedMember),
       })
         .then((response) => response.json())
         .then((data) => {
@@ -111,7 +126,7 @@ const MembersApp = () => {
     )
     setMembers(updatedMembers)
 
-    // Actualizar en el servidor
+    
     const memberToUpdate = updatedMembers.find((member) => member.id === id)
     fetch(`http://localhost:3001/members/${id}`, {
       method: 'PUT',
@@ -121,13 +136,16 @@ const MembersApp = () => {
   }
 
   const handleDeleteMember = (id) => {
-    fetch(`http://localhost:3001/members/${id}`, {
-      method: 'DELETE',
-    })
-      .then(() => {
-        setMembers((prev) => prev.filter((member) => member.id !== id))
+    const confirmDelete = window.confirm('¿Estás seguro de que deseas eliminar este miembro?')
+    if (confirmDelete) {
+      fetch(`http://localhost:3001/members/${id}`, {
+        method: 'DELETE',
       })
-      .catch((error) => console.error('Error deleting member:', error))
+        .then(() => {
+          setMembers((prev) => prev.filter((member) => member.id !== id))
+        })
+        .catch((error) => console.error('Error deleting member:', error))
+    }
   }
 
   const handleInputChange = (e) => {
@@ -178,7 +196,7 @@ const MembersApp = () => {
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
             />
-            <CButton color="primary" onClick={handleAddMember}>
+            <CButton color="info" onClick={handleAddMember}>
               Add
             </CButton>
           </div>
@@ -237,7 +255,7 @@ const MembersApp = () => {
                   </CTableDataCell>
                   <CTableDataCell>
                     <CButton
-                      color="primary"
+                      color="info"
                       size="sm"
                       onClick={() => handleNavigateToEvents(member.id)}
                     >
@@ -339,7 +357,7 @@ const MembersApp = () => {
           <CButton color="secondary" onClick={() => setShowModal(false)}>
             Cancelar
           </CButton>
-          <CButton color="primary" onClick={handleSaveMember}>
+          <CButton color="info" onClick={handleSaveMember}>
             Guardar
           </CButton>
         </CModalFooter>

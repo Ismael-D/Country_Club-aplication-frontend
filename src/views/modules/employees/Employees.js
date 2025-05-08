@@ -86,13 +86,16 @@ const Employees = () => {
   }
 
   const handleDeleteEmployee = (id) => {
-    fetch(`http://localhost:3001/employees/${id}`, {
-      method: 'DELETE',
-    })
-      .then(() => {
-        setEmployees((prev) => prev.filter((employee) => employee.id !== id))
+    const confirmDelete = window.confirm('¿Estás seguro de que deseas eliminar este empleado?')
+    if (confirmDelete) {
+      fetch(`http://localhost:3001/employees/${id}`, {
+        method: 'DELETE',
       })
-      .catch((error) => console.error('Error deleting employee:', error))
+        .then(() => {
+          setEmployees((prev) => prev.filter((employee) => employee.id !== id))
+        })
+        .catch((error) => console.error('Error deleting employee:', error))
+    }
   }
 
   const handleInputChange = (e) => {
@@ -140,7 +143,7 @@ const Employees = () => {
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
             />
-            <CButton color="primary" onClick={handleAddEmployee}>
+            <CButton color="info" onClick={handleAddEmployee}>
               Add
             </CButton>
           </div>
@@ -190,7 +193,7 @@ const Employees = () => {
                   </CTableDataCell>
                   <CTableDataCell>
                     <CButton
-                      color="primary"
+                      color="info"
                       size="sm"
                       onClick={() => handleNavigateToAssignWork(employee.id)}
                     >
@@ -265,7 +268,7 @@ const Employees = () => {
                 />
               </div>
               <div className="mb-3">
-                <CFormLabel>Salario</CFormLabel>
+                <CFormLabel>Salario </CFormLabel>
                 <CFormInput
                   type="number"
                   name="salario"
@@ -280,7 +283,7 @@ const Employees = () => {
           <CButton color="secondary" onClick={() => setShowModal(false)}>
             Cancelar
           </CButton>
-          <CButton color="primary" onClick={handleSaveEmployee}>
+          <CButton color="info" onClick={handleSaveEmployee}>
             Guardar
           </CButton>
         </CModalFooter>

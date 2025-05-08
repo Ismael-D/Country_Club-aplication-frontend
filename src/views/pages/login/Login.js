@@ -31,7 +31,7 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [visible, setVisible] = useState(false); // Estado para el modal de recuperar contraseña
+  const [visible, setVisible] = useState(false); 
   const navigate = useNavigate();
 
   const Credentials = [
@@ -62,7 +62,7 @@ const Login = () => {
   };
 
   const handleSaveMember = () => {
-    // Validar que el estado y la deuda sean consistentes
+    
     if (currentMember.estado === 'al_dia' && currentMember.deuda > 0) {
       alert('Un miembro al día no puede tener deuda.');
       return;
@@ -73,7 +73,7 @@ const Login = () => {
     }
 
     if (currentMember.id) {
-      // Update existing member
+      
       fetch(`http://localhost:3001/members/${currentMember.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -89,7 +89,7 @@ const Login = () => {
         })
         .catch((error) => console.error('Error updating member:', error));
     } else {
-      // Add new member
+      
       fetch('http://localhost:3001/members', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -125,7 +125,6 @@ const Login = () => {
                 boxShadow: '1rem 1rem 1rem rgb(11, 41, 53)'
               }}>
                 <CCardBody>
-                  {/* Imagen centralizada */}
                   <div className="text-center mb-4">
                     <CImage
                       align="center"
@@ -168,7 +167,7 @@ const Login = () => {
                     {error && (<CAlert color="danger">{error}</CAlert>)}
 
                     <CRow>
-                      <CCol xs={12} className="text-start"> {/* Cambiado a text-start para alinear a la izquierda */}
+                      <CCol xs={12} className="text-start"> 
                         <CButton color="warning" className="px-4 me-2" type="submit" disabled={loading}>
                           {loading ? <CSpinner size="sm" className="me-2" /> : null}
                           {loading ? 'Loading...' : 'Login'}
@@ -186,7 +185,7 @@ const Login = () => {
         </CRow>
       </CContainer>
 
-      {/* Modal para recuperar contraseña */}
+      
       <CModal
         backdrop="static"
         visible={visible}

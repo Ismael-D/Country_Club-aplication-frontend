@@ -74,9 +74,9 @@
       "dni": "V-66778899",
       "correo": "luis.martinez@example.com",
       "telefono": "6677889900",
-      "fechaPago": "2025-02-10",
-      "deuda": "200",
-      "estado": "con_deuda"
+      "fechaPago": "2025-05-08",
+      "deuda": 0,
+      "estado": "al_dia"
     },
     {
       "id": "7",
@@ -85,20 +85,20 @@
       "dni": "V-99887766",
       "correo": "sofia.hernandez@example.com",
       "telefono": "9988776655",
-      "fechaPago": "2025-01-08",
-      "deuda": 0,
+      "fechaPago": "2025-01-01",
+      "deuda": 200,
       "estado": "al_dia"
     },
     {
       "id": "8",
-      "nombres": "Pedro",
+      "nombres": "Giselle",
       "apellidos": "Gómez",
       "dni": "V-44556677",
       "correo": "pedro.gomez@example.com",
       "telefono": "4455667788",
-      "fechaPago": "2025-05-03",
-      "deuda": "0",
-      "estado": "al_dia"
+      "fechaPago": "2025-01-01",
+      "deuda": 250,
+      "estado": "con_deuda"
     },
     {
       "id": "9",
@@ -107,9 +107,9 @@
       "dni": "V-22334455",
       "correo": "lucia.vargas@example.com",
       "telefono": "2233445566",
-      "fechaPago": "2025-05-08",
-      "deuda": 0,
-      "estado": "al_dia"
+      "fechaPago": "2024-08-01",
+      "deuda": 500,
+      "estado": "con_deuda"
     },
     {
       "id": "10",
@@ -131,11 +131,12 @@
       "tlf": "0412-3456789",
       "dni": "V-12345678",
       "role": "Admin",
-      "status": "Active",
+      "status": "Inactive",
       "avatar": {
         "src": "src/assets/images/avatars/1.jpeg",
         "status": "success"
-      }
+      },
+      "password": "1234"
     },
     {
       "id": "2",
@@ -169,12 +170,13 @@
       "email": "ana.lopez@example.com",
       "tlf": "0412-5566778",
       "dni": "V-55667788",
-      "role": "Admin",
+      "role": "Manager",
       "status": "Active",
       "avatar": {
         "src": "src/assets/images/avatars/4.jpg",
         "status": "success"
-      }
+      },
+      "password": "4321"
     },
     {
       "id": "5",
@@ -190,7 +192,7 @@
       }
     },
     {
-      "id": 6,
+      "id": "6",
       "name": "Juan Perez",
       "email": "juan.perez@example.com",
       "tlf": "0412-3344556",
@@ -201,9 +203,22 @@
         "src": "src/assets/images/avatars/6.jpg",
         "status": "success"
       }
+    },
+    {
+      "id": "f328",
+      "name": "david",
+      "email": "example@gmail.com",
+      "tlf": "333-3333",
+      "dni": "11112133",
+      "role": "Manager",
+      "avatar": {
+        "src": "",
+        "status": "secondary"
+      },
+      "status": "Active",
+      "password": "2345"
     }
   ],
-  
   "employees": [
     {
       "id": "1",

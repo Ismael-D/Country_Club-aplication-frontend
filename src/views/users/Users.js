@@ -28,11 +28,11 @@ import { cilPeople, cilPencil } from '@coreui/icons'
 
 const Users = () => {
   const [users, setUsers] = useState([])
-  const [visible, setVisible] = useState(false) // Estado para mostrar/ocultar el modal
-  const [currentUser, setCurrentUser] = useState(null) // Usuario seleccionado para editar
-  const [confirmPassword, setConfirmPassword] = useState('') // Nuevo estado para confirmar contraseña
+  const [visible, setVisible] = useState(false)
+  const [currentUser, setCurrentUser] = useState(null) 
+  const [confirmPassword, setConfirmPassword] = useState('') 
 
-  // Fetch users from json-server
+  
   useEffect(() => {
     fetch('http://localhost:3001/users')
       .then((response) => response.json())
@@ -41,8 +41,8 @@ const Users = () => {
   }, [])
 
   const handleModifyUser = (user) => {
-    setCurrentUser(user) // Guarda el usuario actual
-    setVisible(true) // Muestra el modal
+    setCurrentUser(user) 
+    setVisible(true) 
   }
 
   const handleSaveUser = () => {
@@ -52,7 +52,6 @@ const Users = () => {
     }
 
     if (currentUser.id) {
-      // Actualizar usuario existente
       fetch(`http://localhost:3001/users/${currentUser.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -62,11 +61,11 @@ const Users = () => {
           setUsers((prev) =>
             prev.map((user) => (user.id === currentUser.id ? currentUser : user))
           )
-          setVisible(false) // Cierra el modal
+          setVisible(false) 
         })
         .catch((error) => console.error('Error updating user:', error))
     } else {
-      // Agregar nuevo usuario
+      
       fetch('http://localhost:3001/users', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -75,7 +74,7 @@ const Users = () => {
         .then((response) => response.json())
         .then((newUser) => {
           setUsers((prev) => [...prev, newUser])
-          setVisible(false) // Cierra el modal
+          setVisible(false) 
         })
         .catch((error) => console.error('Error adding user:', error))
     }
@@ -126,7 +125,7 @@ const Users = () => {
         <CCardHeader>
           Users
           <CButton
-            color="primary"
+            color="info"
             size="sm"
             className="float-end"
             onClick={() => {
@@ -135,9 +134,9 @@ const Users = () => {
                 email: '',
                 tlf: '',
                 dni: '',
-                role: 'Admin', // Valor predeterminado
+                role: 'Admin', 
                 avatar: { src: '', status: 'secondary' },
-                status: 'Active', // Estado predeterminado
+                status: 'Active',
               })
               setVisible(true)
             }}
@@ -290,7 +289,7 @@ const Users = () => {
           <CButton color="secondary" onClick={() => setVisible(false)}>
             Cancel
           </CButton>
-          <CButton color="primary" onClick={handleSaveUser}>
+          <CButton color="info" onClick={handleSaveUser}>
             Save
           </CButton>
         </CModalFooter>

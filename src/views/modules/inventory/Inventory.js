@@ -83,13 +83,16 @@ const Inventory = () => {
   }
 
   const handleDeleteItem = (id) => {
-    fetch(`http://localhost:3001/inventory/${id}`, {
-      method: 'DELETE',
-    })
-      .then(() => {
-        setInventory((prev) => prev.filter((item) => item.id !== id))
+    const confirmDelete = window.confirm('Are you sure you want to delete this item?')
+    if (confirmDelete) {
+      fetch(`http://localhost:3001/inventory/${id}`, {
+        method: 'DELETE',
       })
-      .catch((error) => console.error('Error deleting item:', error))
+        .then(() => {
+          setInventory((prev) => prev.filter((item) => item.id !== id))
+        })
+        .catch((error) => console.error('Error deleting item:', error))
+    }
   }
 
   const handleInputChange = (e) => {
@@ -113,7 +116,7 @@ const Inventory = () => {
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
             />
-            <CButton color="primary" onClick={handleAddItem}>
+            <CButton color="info" onClick={handleAddItem}>
               Agregar
             </CButton>
           </div>
@@ -249,7 +252,7 @@ const Inventory = () => {
           <CButton color="secondary" onClick={() => setShowModal(false)}>
             Cancelar
           </CButton>
-          <CButton color="primary" onClick={handleSaveItem}>
+          <CButton color="info" onClick={handleSaveItem}>
             Guardar
           </CButton>
         </CModalFooter>
