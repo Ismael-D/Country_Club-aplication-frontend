@@ -16,126 +16,95 @@ import {
   CModalFooter,
   CModalHeader,
   CModalTitle,
-  CSpinner
-} from '@coreui/react' 
+  CSpinner,
+  CImage
+} from '@coreui/react'
 
 import CIcon from '@coreui/icons-react'
-import { cilLockLocked, cilUser } from '@coreui/icons' 
+import { cilLockLocked, cilUser } from '@coreui/icons'
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-//import centroArtesanal from '../../../assets/images/centroArtesanal.jpg' 
-//import AlertMessage from './Alerta'
-
-export const ModalStaticBackdropExample = () => {
-  const [visible, setVisible] = useState(false)
-  return (
-    <>      
-    <CButton color="success" onClick={() => setVisible(!visible)}>
-      Recuperar Contraseña
-    </CButton>
-
-    <CModal
-      backdrop="static"
-      visible={visible}
-      onClose={() => setVisible(false)}
-      aria-labelledby="StaticBackdropExampleLabel"
-    >
-      <CModalHeader>
-        <CModalTitle id="StaticBackdropExampleLabel">Recuperar Contraseña</CModalTitle>
-      </CModalHeader>
-      <CModalBody>
-        <CFormInput 
-        type='email'
-        placeholder='Ingrese su correo electrónico'
-        autoComplete='email'
-        required
-        />
-      </CModalBody>
-      <CModalFooter>
-        <CButton color="secondary" onClick={() => setVisible(false)}>
-          Cerrar
-        </CButton>
-        <CButton color="success">Enviar</CButton>
-      </CModalFooter>
-    </CModal>
-  </>
-  )
-}
-
-export const SpinnerGrowExample = () => {
-  return <CSpinner as="span" className="me-2" size="sm" variant="grow" aria-hidden="true" />
-}
+import unnamed from '../../../assets/images/unnamed.webp';
 
 const Login = () => {
-  const [username, setUsername] = useState(''); 
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate(); 
+  const [visible, setVisible] = useState(false); // Estado para el modal de recuperar contraseña
+  const navigate = useNavigate();
 
   const Credentials = [
-    { username: 'cesaradmin', password: 'cesaradmin41'},
-    { username: 'orianaadmin', password: '1234'},
-    { username: 'gabyveadmin', password: 'gabyveadmin41'}
+    { username: 'admin', password: '1234' },
   ]
 
   const handleLogin = (e) => {
-    e.preventDefault(); 
-    setLoading(true);   
-    setError(''); 
-    
-  setTimeout(() => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
 
-    const founduser = Credentials.find (
-      user => user.username === username && user.password === password
-    )
+    setTimeout(() => {
+      const founduser = Credentials.find(
+        user => user.username === username && user.password === password
+      )
 
-    if (founduser) {
-      localStorage.setItem ('isAuthenticated', 'true')
-      localStorage.setItem ('user', JSON.stringify({
-        username: founduser.username
-      }))
-      navigate ('/dashboard')
-    } else {
-      setError ('Crontraseña Incorrecta')
-    }
-    setLoading (false)
-    }, 1800 )
+      if (founduser) {
+        localStorage.setItem('isAuthenticated', 'true')
+        localStorage.setItem('user', JSON.stringify({
+          username: founduser.username
+        }))
+        navigate('/dashboard')
+      } else {
+        setError('Contraseña Incorrecta')
+      }
+      setLoading(false)
+    }, 1800)
   };
 
   return (
-    <div className="bg-body-tertiary min-vh-100 d-flex flex-row align-items-center" 
+    <div
+      className="bg-body-tertiary min-vh-100 d-flex justify-content-center align-items-center"
       style={{
-      //backgroundImage: url(${centroArtesanal}), 
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      backgroundRepeat: 'no-repeat'
-    }}> 
-
+        backgroundImage: `url(${unnamed})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+      }}
+    >
       <CContainer>
-        <CRow className="justify-content-end">
+        <CRow className="justify-content-center">
           <CCol md={6}>
             <CCardGroup>
-              <CCard className="p-4" style={{ 
+              <CCard className="p-4" style={{
+                backgroundColor: '#071923',
                 border: '1px solid',
-                borderRadius: '1rem', 
-                boxShadow: '1rem 1rem 1rem rgba(0, 0, 0, 0.75)' 
+                borderRadius: '1rem',
+                boxShadow: '1rem 1rem 1rem #12445f'
               }}>
                 <CCardBody>
+                  {/* Imagen centralizada */}
+                  <div className="text-center mb-4">
+                    <CImage
+                      align="center"
+                      src="src/assets/images/imagen_2025-04-09_222352977-modified.png"
+                      height={100}
+                    />
+                  </div>
+
                   <CForm onSubmit={handleLogin}>
                     <h1>Login</h1>
                     <p className="text-body-secondary">Sign In to your account</p>
-                    
+
                     <CInputGroup className="mb-3">
                       <CInputGroupText>
                         <CIcon icon={cilUser} />
                       </CInputGroupText>
-                      <CFormInput 
-                      placeholder="Username" 
-                      autoComplete="username" 
-                      value={username} 
-                      onChange={(e) => setUsername(e.target.value)} 
-                      required 
+                      <CFormInput
+                        placeholder="Username"
+                        autoComplete="username"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        required
                       />
                     </CInputGroup>
 
@@ -153,20 +122,17 @@ const Login = () => {
                       />
                     </CInputGroup>
 
-                    { error && (<AlertMessage/>) }
-                    
+                    {error && (<CAlert color="danger">{error}</CAlert>)}
+
                     <CRow>
-                      <CCol xs={6}>
-                        <CButton color="success" className="px-4" type="submit" disabled={loading}>
-                          {loading ? <SpinnerGrowExample /> : null}
+                      <CCol xs={12} className="text-start"> {/* Cambiado a text-start para alinear a la izquierda */}
+                        <CButton color="warning" className="px-4 me-2" type="submit" disabled={loading}>
+                          {loading ? <CSpinner size="sm" className="me-2" /> : null}
                           {loading ? 'Loading...' : 'Login'}
                         </CButton>
-                      </CCol>
-
-                      <CCol xs={6} className="text-right" >
-                        <div>
-                          <ModalStaticBackdropExample />
-                        </div>
+                        <CButton color="warning" onClick={() => setVisible(true)}>
+                          Recuperar Contraseña
+                        </CButton>
                       </CCol>
                     </CRow>
                   </CForm>
@@ -176,6 +142,32 @@ const Login = () => {
           </CCol>
         </CRow>
       </CContainer>
+
+      {/* Modal para recuperar contraseña */}
+      <CModal
+        backdrop="static"
+        visible={visible}
+        onClose={() => setVisible(false)}
+        aria-labelledby="StaticBackdropExampleLabel"
+      >
+        <CModalHeader>
+          <CModalTitle id="StaticBackdropExampleLabel">Recuperar Contraseña</CModalTitle>
+        </CModalHeader>
+        <CModalBody>
+          <CFormInput
+            type='email'
+            placeholder='Ingrese su correo electrónico'
+            autoComplete='email'
+            required
+          />
+        </CModalBody>
+        <CModalFooter>
+          <CButton color="secondary" onClick={() => setVisible(false)}>
+            Cerrar
+          </CButton>
+          <CButton color="warning">Enviar</CButton>
+        </CModalFooter>
+      </CModal>
     </div>
   )
 }
