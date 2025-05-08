@@ -30,6 +30,7 @@ const Users = () => {
   const [users, setUsers] = useState([])
   const [visible, setVisible] = useState(false) // Estado para mostrar/ocultar el modal
   const [currentUser, setCurrentUser] = useState(null) // Usuario seleccionado para editar
+  const [confirmPassword, setConfirmPassword] = useState('') // Nuevo estado para confirmar contraseña
 
   // Fetch users from json-server
   useEffect(() => {
@@ -45,6 +46,11 @@ const Users = () => {
   }
 
   const handleSaveUser = () => {
+    if (currentUser.password !== confirmPassword) {
+      alert('Passwords do not match!')
+      return
+    }
+
     if (currentUser.id) {
       // Actualizar usuario existente
       fetch(`http://localhost:3001/users/${currentUser.id}`, {
@@ -76,13 +82,16 @@ const Users = () => {
   }
 
   const handleDeleteUser = (id) => {
-    fetch(`http://localhost:3001/users/${id}`, {
-      method: 'DELETE',
-    })
-      .then(() => {
-        setUsers((prev) => prev.filter((user) => user.id !== id))
+    const confirmDelete = window.confirm('Are you sure you want to delete this user?')
+    if (confirmDelete) {
+      fetch(`http://localhost:3001/users/${id}`, {
+        method: 'DELETE',
       })
-      .catch((error) => console.error('Error deleting user:', error))
+        .then(() => {
+          setUsers((prev) => prev.filter((user) => user.id !== id))
+        })
+        .catch((error) => console.error('Error deleting user:', error))
+    }
   }
 
   const handleInputChange = (e) => {
@@ -114,7 +123,28 @@ const Users = () => {
   return (
     <>
       <CCard className="mb-4">
-        <CCardHeader>Users</CCardHeader>
+        <CCardHeader>
+          Users
+          <CButton
+            color="primary"
+            size="sm"
+            className="float-end"
+            onClick={() => {
+              setCurrentUser({
+                name: '',
+                email: '',
+                tlf: '',
+                dni: '',
+                role: 'Admin', // Valor predeterminado
+                avatar: { src: '', status: 'secondary' },
+                status: 'Active', // Estado predeterminado
+              })
+              setVisible(true)
+            }}
+          >
+            Add New User
+          </CButton>
+        </CCardHeader>
         <CCardBody>
           <CTable align="middle" className="mb-0 border" hover responsive>
             <CTableHead>
@@ -234,6 +264,24 @@ const Users = () => {
                   <option value="Manager">Manager</option>
                   <option value="Event Coordinator">Event Coordinator</option>
                 </select>
+              </div>
+              <div className="mb-3">
+                <CFormLabel>Password</CFormLabel>
+                <CFormInput
+                  type="password"
+                  name="password"
+                  value={currentUser.password || ''}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div className="mb-3">
+                <CFormLabel>Confirm Password</CFormLabel>
+                <CFormInput
+                  type="password"
+                  name="confirmPassword"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                />
               </div>
             </CForm>
           )}

@@ -61,6 +61,49 @@ const Login = () => {
     }, 1800)
   };
 
+  const handleSaveMember = () => {
+    // Validar que el estado y la deuda sean consistentes
+    if (currentMember.estado === 'al_dia' && currentMember.deuda > 0) {
+      alert('Un miembro al día no puede tener deuda.');
+      return;
+    }
+    if (currentMember.estado === 'con_deuda' && currentMember.deuda === 0) {
+      alert('Un miembro con deuda no puede tener deuda 0.');
+      return;
+    }
+
+    if (currentMember.id) {
+      // Update existing member
+      fetch(`http://localhost:3001/members/${currentMember.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(currentMember),
+      })
+        .then(() => {
+          setMembers((prev) =>
+            prev.map((member) =>
+              member.id === currentMember.id ? currentMember : member
+            )
+          );
+          setShowModal(false);
+        })
+        .catch((error) => console.error('Error updating member:', error));
+    } else {
+      // Add new member
+      fetch('http://localhost:3001/members', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(currentMember),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          setMembers((prev) => [...prev, data]);
+          setShowModal(false);
+        })
+        .catch((error) => console.error('Error adding member:', error));
+    }
+  };
+
   return (
     <div
       className="bg-body-tertiary min-vh-100 d-flex justify-content-center align-items-center"
@@ -79,7 +122,7 @@ const Login = () => {
                 backgroundColor: '#071923',
                 border: '1px solid',
                 borderRadius: '1rem',
-                boxShadow: '1rem 1rem 1rem #12445f'
+                boxShadow: '1rem 1rem 1rem rgb(11, 41, 53)'
               }}>
                 <CCardBody>
                   {/* Imagen centralizada */}
@@ -91,9 +134,9 @@ const Login = () => {
                     />
                   </div>
 
-                  <CForm onSubmit={handleLogin}>
+                  <CForm onSubmit={handleLogin} style={{ color: 'white' }}>
                     <h1>Login</h1>
-                    <p className="text-body-secondary">Sign In to your account</p>
+                    <p className="text-body-secondary" >Sign In to your account</p>
 
                     <CInputGroup className="mb-3">
                       <CInputGroupText>

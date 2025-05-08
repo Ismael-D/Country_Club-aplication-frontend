@@ -30,7 +30,7 @@
       "dni": "V-87654321",
       "correo": "maria.gonzalez@example.com",
       "telefono": "987654321",
-      "fechaPago": "2025-01-08",
+      "fechaPago": "2025-05-08",
       "deuda": 0,
       "estado": "al_dia"
     },
@@ -41,9 +41,9 @@
       "dni": "V-11223344",
       "correo": "carlos.ramirez@example.com",
       "telefono": "1122334455",
-      "fechaPago": "2025-03-20",
-      "deuda": "100",
-      "estado": "con_deuda"
+      "fechaPago": "2025-05-08",
+      "deuda": 0,
+      "estado": "al_dia"
     },
     {
       "id": "4",
@@ -85,7 +85,7 @@
       "dni": "V-99887766",
       "correo": "sofia.hernandez@example.com",
       "telefono": "9988776655",
-      "fechaPago": "2025-05-08",
+      "fechaPago": "2025-01-08",
       "deuda": 0,
       "estado": "al_dia"
     },
@@ -107,9 +107,9 @@
       "dni": "V-22334455",
       "correo": "lucia.vargas@example.com",
       "telefono": "2233445566",
-      "fechaPago": "2025-04-20",
-      "deuda": "50",
-      "estado": "con_deuda"
+      "fechaPago": "2025-05-08",
+      "deuda": 0,
+      "estado": "al_dia"
     },
     {
       "id": "10",
@@ -118,14 +118,14 @@
       "dni": "V-33445566",
       "correo": "miguel.torres@example.com",
       "telefono": "3344556677",
-      "fechaPago": "2025-03-15",
-      "deuda": "150",
-      "estado": "con_deuda"
+      "fechaPago": "2025-05-08",
+      "deuda": 0,
+      "estado": "al_dia"
     }
   ],
   "users": [
     {
-      "id": 1,
+      "id": "1",
       "name": "Ismael Sanchez",
       "email": "ismael.sanchez@example.com",
       "tlf": "0412-3456789",
@@ -138,7 +138,7 @@
       }
     },
     {
-      "id": 2,
+      "id": "2",
       "name": "Liliana Sanchez",
       "email": "liliana.sanchez@example.com",
       "tlf": "0412-9876543",
@@ -151,7 +151,7 @@
       }
     },
     {
-      "id": 3,
+      "id": "3",
       "name": "Carlos Ramirez",
       "email": "carlos.ramirez@example.com",
       "tlf": "0412-1122334",
@@ -164,7 +164,7 @@
       }
     },
     {
-      "id": 4,
+      "id": "4",
       "name": "Ana Lopez",
       "email": "ana.lopez@example.com",
       "tlf": "0412-5566778",
@@ -177,7 +177,7 @@
       }
     },
     {
-      "id": 5,
+      "id": "5",
       "name": "María Gonzalez",
       "email": "maria.gonzalez@example.com",
       "tlf": "0412-9988776",
@@ -203,6 +203,7 @@
       }
     }
   ],
+  
   "employees": [
     {
       "id": "1",
