@@ -26,7 +26,7 @@ export default function DemoApp() {
         title,
         start: selectInfo.startStr,
         end: selectInfo.endStr,
-        allDay: selectInfo.allDay
+        allDay: selectInfo.allDay,
       })
     }
   }
@@ -42,21 +42,21 @@ export default function DemoApp() {
   }
 
   return (
-    <div className='demo-app'>
+    <div className="demo-app">
       <Sidebar
         weekendsVisible={weekendsVisible}
         handleWeekendsToggle={handleWeekendsToggle}
         currentEvents={currentEvents}
       />
-      <div className='demo-app-main'>
+      <div className="demo-app-main">
         <FullCalendar
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
           headerToolbar={{
             left: 'prev,next today',
             center: 'title',
-            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            right: 'dayGridMonth,timeGridWeek,timeGridDay',
           }}
-          initialView='dayGridMonth'
+          initialView="dayGridMonth"
           editable={true}
           selectable={true}
           selectMirror={true}
@@ -89,21 +89,17 @@ function renderEventContent(eventInfo) {
 
 function Sidebar({ weekendsVisible, handleWeekendsToggle, currentEvents }) {
   return (
-    <div className='demo-app-sidebar'>
-      <div className='demo-app-sidebar-section'>
+    <div className="demo-app-sidebar">
+      <div className="demo-app-sidebar-section">
         <h2>Events Calendar</h2>
       </div>
-      <div className='demo-app-sidebar-section'>
+      <div className="demo-app-sidebar-section">
         <label>
-          <input
-            type='checkbox'
-            checked={weekendsVisible}
-            onChange={handleWeekendsToggle}
-          ></input>
+          <input type="checkbox" checked={weekendsVisible} onChange={handleWeekendsToggle}></input>
           toggle weekends
         </label>
       </div>
-      <div className='demo-app-sidebar-section'>
+      <div className="demo-app-sidebar-section">
         <h2>All Events ({currentEvents.length})</h2>
         <ul>
           {currentEvents.map((event) => (
@@ -118,7 +114,13 @@ function Sidebar({ weekendsVisible, handleWeekendsToggle, currentEvents }) {
 function SidebarEvent({ event }) {
   return (
     <li key={event.id}>
-      <b>{formatDate(event.start, {year: 'numeric', month: 'short', day: 'numeric'})}</b>
+      <b>
+        {formatDate(event.start, {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+        })}
+      </b>
       <i>{event.title}</i>
     </li>
   )

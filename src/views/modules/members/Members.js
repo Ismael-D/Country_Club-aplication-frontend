@@ -31,13 +31,13 @@ const MembersApp = () => {
   const [currentMember, setCurrentMember] = useState(null)
   const navigate = useNavigate() // Hook para manejar la navegación
 
-  // Fetch members from json-server
+  // Fetch members from backend API
   useEffect(() => {
-    fetch('http://localhost:3001/members')
+    fetch('http://localhost:3000/api/v1/members')
       .then((response) => response.json())
       .then((data) => {
         const updatedMembers = data.map((member) => {
-          const { deuda, estado } = calculateDebt(member.fechaPago)
+          const { deuda, estado } = calculateDebt(member.fecha_pago)
           return {
             ...member,
             deuda,
@@ -50,6 +50,8 @@ const MembersApp = () => {
   }, [])
 
   const calculateDebt = (fechaPago) => {
+    if (!fechaPago) return { deuda: 0, estado: 'al_dia' }
+
     const lastPaymentDate = new Date(fechaPago)
     const today = new Date()
     const monthsDifference =
@@ -87,23 +89,21 @@ const MembersApp = () => {
 
     if (updatedMember.id) {
       // Update existing member
-      fetch(`http://localhost:3001/members/${updatedMember.id}`, {
+      fetch(`http://localhost:3000/api/v1/members/${updatedMember.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedMember),
       })
         .then(() => {
           setMembers((prev) =>
-            prev.map((member) =>
-              member.id === updatedMember.id ? updatedMember : member
-            )
+            prev.map((member) => (member.id === updatedMember.id ? updatedMember : member)),
           )
           setShowModal(false)
         })
         .catch((error) => console.error('Error updating member:', error))
     } else {
       // Add new member
-      fetch('http://localhost:3001/members', {
+      fetch('http://localhost:3000/api/v1/members', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedMember),
@@ -120,15 +120,12 @@ const MembersApp = () => {
   const handleMarkAsPaid = (id) => {
     const today = new Date().toISOString().split('T')[0] // Fecha actual en formato YYYY-MM-DD
     const updatedMembers = members.map((member) =>
-      member.id === id
-        ? { ...member, fechaPago: today, deuda: 0, estado: 'al_dia' }
-        : member
+      member.id === id ? { ...member, fechaPago: today, deuda: 0, estado: 'al_dia' } : member,
     )
     setMembers(updatedMembers)
 
-    
     const memberToUpdate = updatedMembers.find((member) => member.id === id)
-    fetch(`http://localhost:3001/members/${id}`, {
+    fetch(`http://localhost:3000/api/v1/members/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(memberToUpdate),
@@ -138,7 +135,7 @@ const MembersApp = () => {
   const handleDeleteMember = (id) => {
     const confirmDelete = window.confirm('¿Estás seguro de que deseas eliminar este miembro?')
     if (confirmDelete) {
-      fetch(`http://localhost:3001/members/${id}`, {
+      fetch(`http://localhost:3000/api/v1/members/${id}`, {
         method: 'DELETE',
       })
         .then(() => {
@@ -238,18 +235,10 @@ const MembersApp = () => {
                     >
                       <CIcon icon={cilPencil} />
                     </CButton>{' '}
-                    <CButton
-                      color="info"
-                      size="sm"
-                      onClick={() => handleMarkAsPaid(member.id)}
-                    >
+                    <CButton color="info" size="sm" onClick={() => handleMarkAsPaid(member.id)}>
                       <CIcon icon={cilCheckCircle} /> Pago
                     </CButton>{' '}
-                    <CButton
-                      color="danger"
-                      size="sm"
-                      onClick={() => handleDeleteMember(member.id)}
-                    >
+                    <CButton color="danger" size="sm" onClick={() => handleDeleteMember(member.id)}>
                       <CIcon icon={cilUserUnfollow} />
                     </CButton>
                   </CTableDataCell>

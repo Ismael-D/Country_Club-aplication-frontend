@@ -28,7 +28,6 @@ const Inventory = () => {
   const [showModal, setShowModal] = useState(false)
   const [currentItem, setCurrentItem] = useState(null)
 
-
   useEffect(() => {
     fetch('http://localhost:3001/inventory')
       .then((response) => response.json())
@@ -51,7 +50,6 @@ const Inventory = () => {
 
   const handleSaveItem = () => {
     if (currentItem.id) {
-  
       fetch(`http://localhost:3001/inventory/${currentItem.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -59,9 +57,7 @@ const Inventory = () => {
       })
         .then(() => {
           setInventory((prev) =>
-            prev.map((item) =>
-              item.id === currentItem.id ? currentItem : item
-            )
+            prev.map((item) => (item.id === currentItem.id ? currentItem : item)),
           )
           setShowModal(false)
         })
@@ -101,7 +97,7 @@ const Inventory = () => {
   }
 
   const filteredInventory = inventory.filter((item) =>
-    item.nombre.toLowerCase().includes(filter.toLowerCase())
+    item.nombre.toLowerCase().includes(filter.toLowerCase()),
   )
 
   return (
@@ -154,11 +150,7 @@ const Inventory = () => {
                     >
                       <CIcon icon={cilPencil} />
                     </CButton>{' '}
-                    <CButton
-                      color="danger"
-                      size="sm"
-                      onClick={() => handleDeleteItem(item.id)}
-                    >
+                    <CButton color="danger" size="sm" onClick={() => handleDeleteItem(item.id)}>
                       <CIcon icon={cilTrash} />
                     </CButton>
                   </CTableDataCell>
@@ -234,11 +226,7 @@ const Inventory = () => {
               </div>
               <div className="mb-3">
                 <CFormLabel>Estado</CFormLabel>
-                <CFormSelect
-                  name="estado"
-                  value={currentItem.estado}
-                  onChange={handleInputChange}
-                >
+                <CFormSelect name="estado" value={currentItem.estado} onChange={handleInputChange}>
                   <option value="">Seleccionar</option>
                   <option value="Nuevo">Nuevo</option>
                   <option value="Usado">Usado</option>

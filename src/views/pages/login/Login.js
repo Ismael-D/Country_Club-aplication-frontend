@@ -17,63 +17,62 @@ import {
   CModalHeader,
   CModalTitle,
   CSpinner,
-  CImage
+  CImage,
 } from '@coreui/react'
 
 import CIcon from '@coreui/icons-react'
 import { cilLockLocked, cilUser } from '@coreui/icons'
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import unnamed from '../../../assets/images/unnamed.webp';
+import unnamed from '../../../assets/images/unnamed.webp'
 
 const Login = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [visible, setVisible] = useState(false); 
-  const navigate = useNavigate();
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [visible, setVisible] = useState(false)
+  const navigate = useNavigate()
 
-  const Credentials = [
-    { username: 'admin', password: '1234' },
-  ]
+  const Credentials = [{ username: 'admin', password: '1234' }]
 
   const handleLogin = (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
+    e.preventDefault()
+    setLoading(true)
+    setError('')
 
     setTimeout(() => {
       const founduser = Credentials.find(
-        user => user.username === username && user.password === password
+        (user) => user.username === username && user.password === password,
       )
 
       if (founduser) {
         localStorage.setItem('isAuthenticated', 'true')
-        localStorage.setItem('user', JSON.stringify({
-          username: founduser.username
-        }))
+        localStorage.setItem(
+          'user',
+          JSON.stringify({
+            username: founduser.username,
+          }),
+        )
         navigate('/dashboard')
       } else {
         setError('Contraseña Incorrecta')
       }
       setLoading(false)
     }, 1800)
-  };
+  }
 
   const handleSaveMember = () => {
-    
     if (currentMember.estado === 'al_dia' && currentMember.deuda > 0) {
-      alert('Un miembro al día no puede tener deuda.');
-      return;
+      alert('Un miembro al día no puede tener deuda.')
+      return
     }
     if (currentMember.estado === 'con_deuda' && currentMember.deuda === 0) {
-      alert('Un miembro con deuda no puede tener deuda 0.');
-      return;
+      alert('Un miembro con deuda no puede tener deuda 0.')
+      return
     }
 
     if (currentMember.id) {
-      
       fetch(`http://localhost:3001/members/${currentMember.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -81,15 +80,12 @@ const Login = () => {
       })
         .then(() => {
           setMembers((prev) =>
-            prev.map((member) =>
-              member.id === currentMember.id ? currentMember : member
-            )
-          );
-          setShowModal(false);
+            prev.map((member) => (member.id === currentMember.id ? currentMember : member)),
+          )
+          setShowModal(false)
         })
-        .catch((error) => console.error('Error updating member:', error));
+        .catch((error) => console.error('Error updating member:', error))
     } else {
-      
       fetch('http://localhost:3001/members', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -97,12 +93,12 @@ const Login = () => {
       })
         .then((response) => response.json())
         .then((data) => {
-          setMembers((prev) => [...prev, data]);
-          setShowModal(false);
+          setMembers((prev) => [...prev, data])
+          setShowModal(false)
         })
-        .catch((error) => console.error('Error adding member:', error));
+        .catch((error) => console.error('Error adding member:', error))
     }
-  };
+  }
 
   return (
     <div
@@ -118,12 +114,15 @@ const Login = () => {
         <CRow className="justify-content-center">
           <CCol md={6}>
             <CCardGroup>
-              <CCard className="p-4" style={{
-                backgroundColor: '#071923',
-                border: '1px solid',
-                borderRadius: '1rem',
-                boxShadow: '1rem 1rem 1rem rgb(11, 41, 53)'
-              }}>
+              <CCard
+                className="p-4"
+                style={{
+                  backgroundColor: '#071923',
+                  border: '1px solid',
+                  borderRadius: '1rem',
+                  boxShadow: '1rem 1rem 1rem rgb(11, 41, 53)',
+                }}
+              >
                 <CCardBody>
                   <div className="text-center mb-4">
                     <CImage
@@ -135,7 +134,7 @@ const Login = () => {
 
                   <CForm onSubmit={handleLogin} style={{ color: 'white' }}>
                     <h1>Login</h1>
-                    <p className="text-body-secondary" >Sign In to your account</p>
+                    <p className="text-body-secondary">Sign In to your account</p>
 
                     <CInputGroup className="mb-3">
                       <CInputGroupText>
@@ -164,11 +163,16 @@ const Login = () => {
                       />
                     </CInputGroup>
 
-                    {error && (<CAlert color="danger">{error}</CAlert>)}
+                    {error && <CAlert color="danger">{error}</CAlert>}
 
                     <CRow>
-                      <CCol xs={12} className="text-start"> 
-                        <CButton color="warning" className="px-4 me-2" type="submit" disabled={loading}>
+                      <CCol xs={12} className="text-start">
+                        <CButton
+                          color="warning"
+                          className="px-4 me-2"
+                          type="submit"
+                          disabled={loading}
+                        >
                           {loading ? <CSpinner size="sm" className="me-2" /> : null}
                           {loading ? 'Loading...' : 'Login'}
                         </CButton>
@@ -185,7 +189,6 @@ const Login = () => {
         </CRow>
       </CContainer>
 
-      
       <CModal
         backdrop="static"
         visible={visible}
@@ -197,9 +200,9 @@ const Login = () => {
         </CModalHeader>
         <CModalBody>
           <CFormInput
-            type='email'
-            placeholder='Ingrese su correo electrónico'
-            autoComplete='email'
+            type="email"
+            placeholder="Ingrese su correo electrónico"
+            autoComplete="email"
             required
           />
         </CModalBody>

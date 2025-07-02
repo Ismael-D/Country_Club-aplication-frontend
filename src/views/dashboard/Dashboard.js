@@ -19,19 +19,19 @@ const Dashboard = () => {
   const [employees, setEmployees] = useState([])
   const [inventory, setInventory] = useState([])
 
-  // Fetch data from db.json
+  // Fetch data from backend API
   useEffect(() => {
-    fetch('http://localhost:3001/members')
+    fetch('http://localhost:3000/api/v1/members')
       .then((response) => response.json())
       .then((data) => setMembers(data))
       .catch((error) => console.error('Error fetching members:', error))
 
-    fetch('http://localhost:3001/employees')
+    fetch('http://localhost:3000/api/v1/employees')
       .then((response) => response.json())
       .then((data) => setEmployees(data))
       .catch((error) => console.error('Error fetching employees:', error))
 
-    fetch('http://localhost:3001/inventory')
+    fetch('http://localhost:3000/api/v1/inventory')
       .then((response) => response.json())
       .then((data) => setInventory(data))
       .catch((error) => console.error('Error fetching inventory:', error))
@@ -46,7 +46,7 @@ const Dashboard = () => {
   const totalEmployees = employees.length
   const averageSalary = (
     employees.reduce((sum, employee) => sum + parseFloat(employee.salario || 0), 0) /
-    totalEmployees || 0
+      totalEmployees || 0
   ).toFixed(2)
   const employeesByPosition = employees.reduce((acc, employee) => {
     acc[employee.posicion] = (acc[employee.posicion] || 0) + 1
@@ -60,14 +60,14 @@ const Dashboard = () => {
       acc[item.estado] = (acc[item.estado] || 0) + 1
       return acc
     },
-    { Nuevo: 0, Usado: 0, Dañado: 0 }
+    { Nuevo: 0, Usado: 0, Dañado: 0 },
   )
   const inventoryByMovement = inventory.reduce(
     (acc, item) => {
       acc[item.tipoMovimiento] = (acc[item.tipoMovimiento] || 0) + 1
       return acc
     },
-    { Entrada: 0, Salida: 0 }
+    { Entrada: 0, Salida: 0 },
   )
 
   return (

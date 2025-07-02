@@ -41,7 +41,7 @@ const AppSidebar = () => {
           src="src\assets\images\imagen_2025-04-09_222352977-modified.png"
           height={55}
         />
-        
+
         <CCloseButton
           className="d-lg-none"
           dark

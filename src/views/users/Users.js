@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   CAvatar,
   CButton,
@@ -28,20 +28,19 @@ import { cilPeople, cilPencil } from '@coreui/icons'
 const Users = () => {
   const [users, setUsers] = useState([])
   const [visible, setVisible] = useState(false)
-  const [currentUser, setCurrentUser] = useState(null) 
-  const [confirmPassword, setConfirmPassword] = useState('') 
+  const [currentUser, setCurrentUser] = useState(null)
+  const [confirmPassword, setConfirmPassword] = useState('')
 
-  
   useEffect(() => {
-    fetch('http://localhost:3002/users')
+    fetch('http://localhost:3000/api/v1/users')
       .then((response) => response.json())
-      .then((data) => setUsers())
+      .then((data) => setUsers(data))
       .catch((error) => console.error('Error fetching users:', error))
   }, [])
 
   const handleModifyUser = (user) => {
-    setCurrentUser(user) 
-    setVisible(true) 
+    setCurrentUser(user)
+    setVisible(true)
   }
 
   const handleSaveUser = () => {
@@ -51,21 +50,18 @@ const Users = () => {
     }
 
     if (currentUser.id) {
-      fetch(`http://localhost:3001/users/${currentUser.id}`, {
+      fetch(`http://localhost:3000/api/v1/users/${currentUser.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(currentUser),
       })
         .then(() => {
-          setUsers((prev) =>
-            prev.map((user) => (user.id === currentUser.id ? currentUser : user))
-          )
-          setVisible(false) 
+          setUsers((prev) => prev.map((user) => (user.id === currentUser.id ? currentUser : user)))
+          setVisible(false)
         })
         .catch((error) => console.error('Error updating user:', error))
     } else {
-      
-      fetch('http://localhost:3001/users', {
+      fetch('http://localhost:3000/api/v1/users', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(currentUser),
@@ -73,16 +69,16 @@ const Users = () => {
         .then((response) => response.json())
         .then((newUser) => {
           setUsers((prev) => [...prev, newUser])
-          setVisible(false) 
+          setVisible(false)
         })
         .catch((error) => console.error('Error adding user:', error))
     }
   }
 
-  const handleDeletUser = (id) => {
+  const handleDeleteUser = (id) => {
     const confirmDelete = window.confirm('Are you sure you want to delete this user?')
     if (confirmDelete) {
-      fetch(`http://localhost:3001/users/${id}`, {
+      fetch(`http://localhost:3000/api/v1/users/${id}`, {
         method: 'DELETE',
       })
         .then(() => {
@@ -104,15 +100,13 @@ const Users = () => {
     const updatedUser = users.find((user) => user.id === id)
     if (updatedUser) {
       updatedUser.status = newStatus
-      fetch(`http://localhost:3001/users/${id}`, {
+      fetch(`http://localhost:3000/api/v1/users/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedUser),
       })
         .then(() => {
-          setUsers((prev) =>
-            prev.map((user) => (user.id === id ? updatedUser : user))
-          )
+          setUsers((prev) => prev.map((user) => (user.id === id ? updatedUser : user)))
         })
         .catch((error) => console.error('Error updating status:', error))
     }
@@ -133,7 +127,7 @@ const Users = () => {
                 email: '',
                 tlf: '',
                 dni: '',
-                role: 'Admin', 
+                role: 'Admin',
                 avatar: { src: '', status: 'secondary' },
                 status: 'Active',
               })
@@ -161,7 +155,11 @@ const Users = () => {
               {users.map((user) => (
                 <CTableRow key={user.id}>
                   <CTableDataCell className="text-center">
-                    <CAvatar size="md" src={user.avatar?.src || ''} status={user.avatar?.status || 'secondary'} />
+                    <CAvatar
+                      size="md"
+                      src={user.avatar?.src || ''}
+                      status={user.avatar?.status || 'secondary'}
+                    />
                   </CTableDataCell>
                   <CTableDataCell>
                     <div>{user.name}</div>
@@ -196,7 +194,7 @@ const Users = () => {
                           Suspended
                         </CDropdownItem>
                       </CDropdownMenu>
-                    </>{' '}
+                    </CDropdown>{' '}
                     <CButton color="danger" size="sm" onClick={() => handleDeleteUser(user.id)}>
                       Delete
                     </CButton>

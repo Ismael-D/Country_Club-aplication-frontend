@@ -20,8 +20,6 @@ import {
   CTableRow,
 } from '@coreui/react'
 
-const Maintenance = () => {
-    
-}
+const Maintenance = () => {}
 
 export default Maintenance

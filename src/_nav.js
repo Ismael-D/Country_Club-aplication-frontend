@@ -70,7 +70,7 @@ const _nav = [
     to: '/modules/inventory',
     icon: <CIcon icon={cilClipboard} customClassName="nav-icon" />,
   },
-  
+
   {
     component: CNavTitle,
     name: 'Extras',
