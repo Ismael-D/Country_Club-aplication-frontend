@@ -171,7 +171,7 @@
       "tlf": "0412-5566778",
       "dni": "V-55667788",
       "role": "Manager",
-      "status": "Active",
+      "status": "Inactive",
       "avatar": {
         "src": "src/assets/images/avatars/4.jpg",
         "status": "success"
@@ -185,7 +185,7 @@
       "tlf": "0412-9988776",
       "dni": "V-99887766",
       "role": "Manager",
-      "status": "Inactive",
+      "status": "Active",
       "avatar": {
         "src": "src/assets/images/avatars/6.jpg",
         "status": "secondary"

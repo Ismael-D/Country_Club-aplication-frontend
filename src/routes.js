@@ -14,6 +14,7 @@ const events = React.lazy(() => import('./views/modules/members/events'))
 const routes = [
   { path: '/', exact: true, name: 'Home' },
   { path: '/dashboard', name: 'Dashboard', element: Dashboard },
+  { path: '/users', name: 'Users', element: Users },
   { path: '/modules', name: 'Modules', element: Users, exact: true },
   { path: '/modules/events', name: 'Events', element: Events },
   { path: '/modules/employees', name: 'Employees', element: Employees },

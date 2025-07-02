@@ -29,7 +29,7 @@ const Inventory = () => {
   const [currentItem, setCurrentItem] = useState(null)
 
   useEffect(() => {
-    fetch('http://localhost:3001/inventory')
+    fetch('http://localhost:3004/inventory')
       .then((response) => response.json())
       .then((data) => setInventory(data))
       .catch((error) => console.error('Error fetching inventory:', error))
@@ -50,7 +50,7 @@ const Inventory = () => {
 
   const handleSaveItem = () => {
     if (currentItem.id) {
-      fetch(`http://localhost:3001/inventory/${currentItem.id}`, {
+      fetch(`http://localhost:3004/inventory/${currentItem.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(currentItem),
@@ -64,7 +64,7 @@ const Inventory = () => {
         .catch((error) => console.error('Error updating item:', error))
     } else {
       // Add new item
-      fetch('http://localhost:3001/inventory', {
+      fetch('http://localhost:3004/inventory', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(currentItem),
@@ -81,7 +81,7 @@ const Inventory = () => {
   const handleDeleteItem = (id) => {
     const confirmDelete = window.confirm('Are you sure you want to delete this item?')
     if (confirmDelete) {
-      fetch(`http://localhost:3001/inventory/${id}`, {
+      fetch(`http://localhost:3004/inventory/${id}`, {
         method: 'DELETE',
       })
         .then(() => {
@@ -116,30 +116,30 @@ const Inventory = () => {
               Agregar
             </CButton>
           </div>
-          <CTable align="middle" className="mb-0 border" hover responsive>
-            <CTableHead>
-              <CTableRow>
-                <CTableHeaderCell>Nombre</CTableHeaderCell>
-                <CTableHeaderCell>Código</CTableHeaderCell>
-                <CTableHeaderCell>Valor</CTableHeaderCell>
-                <CTableHeaderCell>Descripción</CTableHeaderCell>
-                <CTableHeaderCell>Cantidad</CTableHeaderCell>
-                <CTableHeaderCell>Tipo de Movimiento</CTableHeaderCell>
-                <CTableHeaderCell>Estado</CTableHeaderCell>
-                <CTableHeaderCell>Acciones</CTableHeaderCell>
-              </CTableRow>
-            </CTableHead>
-            <CTableBody>
+          <table className="table table-hover table-striped">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Código</th>
+                <th>Valor</th>
+                <th>Descripción</th>
+                <th>Cantidad</th>
+                <th>Tipo de Movimiento</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
               {filteredInventory.map((item) => (
-                <CTableRow key={item.id}>
-                  <CTableDataCell>{item.nombre}</CTableDataCell>
-                  <CTableDataCell>{item.codigo}</CTableDataCell>
-                  <CTableDataCell>{item.valor}</CTableDataCell>
-                  <CTableDataCell>{item.descripcion}</CTableDataCell>
-                  <CTableDataCell>{item.cantidad}</CTableDataCell>
-                  <CTableDataCell>{item.tipoMovimiento}</CTableDataCell>
-                  <CTableDataCell>{item.estado}</CTableDataCell>
-                  <CTableDataCell>
+                <tr key={item.id}>
+                  <td>{item.nombre}</td>
+                  <td>{item.codigo}</td>
+                  <td>{item.valor}</td>
+                  <td>{item.descripcion}</td>
+                  <td>{item.cantidad}</td>
+                  <td>{item.tipoMovimiento}</td>
+                  <td>{item.estado}</td>
+                  <td>
                     <CButton
                       color="success"
                       size="sm"
@@ -149,15 +149,15 @@ const Inventory = () => {
                       }}
                     >
                       <CIcon icon={cilPencil} />
-                    </CButton>{' '}
+                    </CButton>
                     <CButton color="danger" size="sm" onClick={() => handleDeleteItem(item.id)}>
                       <CIcon icon={cilTrash} />
                     </CButton>
-                  </CTableDataCell>
-                </CTableRow>
+                  </td>
+                </tr>
               ))}
-            </CTableBody>
-          </CTable>
+            </tbody>
+          </table>
         </CCardBody>
       </CCard>
 

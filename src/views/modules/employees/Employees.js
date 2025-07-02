@@ -32,7 +32,7 @@ const Employees = () => {
   const navigate = useNavigate()
 
   useEffect(() => {
-    fetch('http://localhost:3001/employees')
+    fetch('http://localhost:3004/employees')
       .then((response) => response.json())
       .then((data) => setEmployees(data))
       .catch((error) => console.error('Error fetching employees:', error))
@@ -54,7 +54,7 @@ const Employees = () => {
   const handleSaveEmployee = () => {
     if (currentEmployee.id) {
       // Update existing employee
-      fetch(`http://localhost:3001/employees/${currentEmployee.id}`, {
+      fetch(`http://localhost:3004/employees/${currentEmployee.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(currentEmployee),
@@ -70,7 +70,7 @@ const Employees = () => {
         .catch((error) => console.error('Error updating employee:', error))
     } else {
       // Add new employee
-      fetch('http://localhost:3001/employees', {
+      fetch('http://localhost:3004/employees', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(currentEmployee),
@@ -87,7 +87,7 @@ const Employees = () => {
   const handleDeleteEmployee = (id) => {
     const confirmDelete = window.confirm('¿Estás seguro de que deseas eliminar este empleado?')
     if (confirmDelete) {
-      fetch(`http://localhost:3001/employees/${id}`, {
+      fetch(`http://localhost:3004/employees/${id}`, {
         method: 'DELETE',
       })
         .then(() => {
@@ -146,32 +146,32 @@ const Employees = () => {
               Add
             </CButton>
           </div>
-          <CTable align="middle" className="mb-0 border" hover responsive>
-            <CTableHead>
-              <CTableRow>
-                <CTableHeaderCell>Name</CTableHeaderCell>
-                <CTableHeaderCell>DNI</CTableHeaderCell>
-                <CTableHeaderCell>Contact</CTableHeaderCell>
-                <CTableHeaderCell>Posición</CTableHeaderCell>
-                <CTableHeaderCell>Salario</CTableHeaderCell>
-                <CTableHeaderCell>Acciones</CTableHeaderCell>
-                <CTableHeaderCell>Assign Work</CTableHeaderCell>
-              </CTableRow>
-            </CTableHead>
-            <CTableBody>
+          <table className="table table-hover table-striped">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>DNI</th>
+                <th>Contact</th>
+                <th>Posición</th>
+                <th>Salario</th>
+                <th>Acciones</th>
+                <th>Assign Work</th>
+              </tr>
+            </thead>
+            <tbody>
               {filteredEmployees.map((employee) => (
-                <CTableRow key={employee.id}>
-                  <CTableDataCell>{`${employee.nombres} ${employee.apellidos}`}</CTableDataCell>
-                  <CTableDataCell>{employee.dni}</CTableDataCell>
-                  <CTableDataCell>
+                <tr key={employee.id}>
+                  <td>{`${employee.nombres} ${employee.apellidos}`}</td>
+                  <td>{employee.dni}</td>
+                  <td>
                     <div>{employee.correo}</div>
                     <div className="small text-body-secondary">
                       <span>Teléfono:</span> {employee.telefono}
                     </div>
-                  </CTableDataCell>
-                  <CTableDataCell>{employee.posicion}</CTableDataCell>
-                  <CTableDataCell>{employee.salario}</CTableDataCell>
-                  <CTableDataCell>
+                  </td>
+                  <td>{employee.posicion}</td>
+                  <td>{employee.salario}</td>
+                  <td>
                     <CButton
                       color="success"
                       size="sm"
@@ -181,7 +181,7 @@ const Employees = () => {
                       }}
                     >
                       <CIcon icon={cilPencil} />
-                    </CButton>{' '}
+                    </CButton>
                     <CButton
                       color="danger"
                       size="sm"
@@ -189,8 +189,8 @@ const Employees = () => {
                     >
                       <CIcon icon={cilUserUnfollow} />
                     </CButton>
-                  </CTableDataCell>
-                  <CTableDataCell>
+                  </td>
+                  <td>
                     <CButton
                       color="info"
                       size="sm"
@@ -198,11 +198,11 @@ const Employees = () => {
                     >
                       Assign Work
                     </CButton>
-                  </CTableDataCell>
-                </CTableRow>
+                  </td>
+                </tr>
               ))}
-            </CTableBody>
-          </CTable>
+            </tbody>
+          </table>
         </CCardBody>
       </CCard>
 

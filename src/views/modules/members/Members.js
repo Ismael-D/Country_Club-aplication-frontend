@@ -31,13 +31,13 @@ const MembersApp = () => {
   const [currentMember, setCurrentMember] = useState(null)
   const navigate = useNavigate() // Hook para manejar la navegación
 
-  // Fetch members from backend API
+  // Fetch members from json-server (temporary for development)
   useEffect(() => {
-    fetch('http://localhost:3000/api/v1/members')
+    fetch('http://localhost:3004/members')
       .then((response) => response.json())
       .then((data) => {
         const updatedMembers = data.map((member) => {
-          const { deuda, estado } = calculateDebt(member.fecha_pago)
+          const { deuda, estado } = calculateDebt(member.fechaPago)
           return {
             ...member,
             deuda,
@@ -89,7 +89,7 @@ const MembersApp = () => {
 
     if (updatedMember.id) {
       // Update existing member
-      fetch(`http://localhost:3000/api/v1/members/${updatedMember.id}`, {
+      fetch(`http://localhost:3004/members/${updatedMember.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedMember),
@@ -103,7 +103,7 @@ const MembersApp = () => {
         .catch((error) => console.error('Error updating member:', error))
     } else {
       // Add new member
-      fetch('http://localhost:3000/api/v1/members', {
+      fetch('http://localhost:3004/members', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedMember),
@@ -125,7 +125,7 @@ const MembersApp = () => {
     setMembers(updatedMembers)
 
     const memberToUpdate = updatedMembers.find((member) => member.id === id)
-    fetch(`http://localhost:3000/api/v1/members/${id}`, {
+    fetch(`http://localhost:3004/members/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(memberToUpdate),
@@ -135,7 +135,7 @@ const MembersApp = () => {
   const handleDeleteMember = (id) => {
     const confirmDelete = window.confirm('¿Estás seguro de que deseas eliminar este miembro?')
     if (confirmDelete) {
-      fetch(`http://localhost:3000/api/v1/members/${id}`, {
+      fetch(`http://localhost:3004/members/${id}`, {
         method: 'DELETE',
       })
         .then(() => {
@@ -197,34 +197,34 @@ const MembersApp = () => {
               Add
             </CButton>
           </div>
-          <CTable align="middle" className="mb-0 border" hover responsive>
-            <CTableHead>
-              <CTableRow>
-                <CTableHeaderCell>Name</CTableHeaderCell>
-                <CTableHeaderCell>DNI</CTableHeaderCell>
-                <CTableHeaderCell>Contact</CTableHeaderCell>
-                <CTableHeaderCell>Last payment</CTableHeaderCell>
-                <CTableHeaderCell>Estado</CTableHeaderCell>
-                <CTableHeaderCell>Deuda</CTableHeaderCell>
-                <CTableHeaderCell>Acciones</CTableHeaderCell>
-                <CTableHeaderCell>Eventos</CTableHeaderCell> {/* Nueva columna */}
-              </CTableRow>
-            </CTableHead>
-            <CTableBody>
+          <table className="table table-hover table-striped">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>DNI</th>
+                <th>Contact</th>
+                <th>Last payment</th>
+                <th>Estado</th>
+                <th>Deuda</th>
+                <th>Acciones</th>
+                <th>Eventos</th>
+              </tr>
+            </thead>
+            <tbody>
               {filteredMembers.map((member) => (
-                <CTableRow key={member.id}>
-                  <CTableDataCell>{`${member.nombres} ${member.apellidos}`}</CTableDataCell>
-                  <CTableDataCell>{member.dni}</CTableDataCell>
-                  <CTableDataCell>
+                <tr key={member.id}>
+                  <td>{`${member.nombres} ${member.apellidos}`}</td>
+                  <td>{member.dni}</td>
+                  <td>
                     <div>{member.correo}</div>
                     <div className="small text-body-secondary">
                       <span>Teléfono:</span> {member.telefono}
                     </div>
-                  </CTableDataCell>
-                  <CTableDataCell>{member.fechaPago}</CTableDataCell>
-                  <CTableDataCell>{member.estado}</CTableDataCell>
-                  <CTableDataCell>{member.deuda}</CTableDataCell>
-                  <CTableDataCell>
+                  </td>
+                  <td>{member.fechaPago}</td>
+                  <td>{member.estado}</td>
+                  <td>{member.deuda}</td>
+                  <td>
                     <CButton
                       color="success"
                       size="sm"
@@ -234,15 +234,15 @@ const MembersApp = () => {
                       }}
                     >
                       <CIcon icon={cilPencil} />
-                    </CButton>{' '}
+                    </CButton>
                     <CButton color="info" size="sm" onClick={() => handleMarkAsPaid(member.id)}>
                       <CIcon icon={cilCheckCircle} /> Pago
-                    </CButton>{' '}
+                    </CButton>
                     <CButton color="danger" size="sm" onClick={() => handleDeleteMember(member.id)}>
                       <CIcon icon={cilUserUnfollow} />
                     </CButton>
-                  </CTableDataCell>
-                  <CTableDataCell>
+                  </td>
+                  <td>
                     <CButton
                       color="info"
                       size="sm"
@@ -250,11 +250,11 @@ const MembersApp = () => {
                     >
                       Ver Eventos
                     </CButton>
-                  </CTableDataCell>
-                </CTableRow>
+                  </td>
+                </tr>
               ))}
-            </CTableBody>
-          </CTable>
+            </tbody>
+          </table>
         </CCardBody>
       </CCard>
 
