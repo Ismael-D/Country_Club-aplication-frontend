@@ -102,6 +102,12 @@ const _nav = [
       },
     ],
   },
+  {
+    component: CNavItem,
+    name: 'Calendario de Eventos',
+    to: '/eventos/calendario',
+    icon: <CIcon icon={cilCalendarCheck} customClassName="nav-icon" />,
+  },
 ]
 
 export default _nav

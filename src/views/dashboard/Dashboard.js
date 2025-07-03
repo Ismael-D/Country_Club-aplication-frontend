@@ -6,12 +6,6 @@ import {
   CCol,
   CRow,
   CProgress,
-  CTable,
-  CTableBody,
-  CTableDataCell,
-  CTableHead,
-  CTableHeaderCell,
-  CTableRow,
 } from '@coreui/react'
 import { memberService, employeeService, inventoryService } from '../../services/api'
 
@@ -22,44 +16,65 @@ const Dashboard = () => {
 
   useEffect(() => {
     memberService.getAll()
-      .then((data) => setMembers(data))
-      .catch((error) => console.error('Error fetching members:', error))
+      .then((response) => {
+        const arr = response?.data?.data
+        setMembers(Array.isArray(arr) ? arr : [])
+      })
+      .catch((error) => {
+        console.error('Error fetching members:', error)
+        setMembers([])
+      })
 
     employeeService.getAll()
-      .then((data) => setEmployees(data))
-      .catch((error) => console.error('Error fetching employees:', error))
+      .then((response) => {
+        const arr = response?.data?.data
+        setEmployees(Array.isArray(arr) ? arr : [])
+      })
+      .catch((error) => {
+        console.error('Error fetching employees:', error)
+        setEmployees([])
+      })
 
     inventoryService.getAll()
-      .then((data) => setInventory(data))
-      .catch((error) => console.error('Error fetching inventory:', error))
+      .then((response) => {
+        const arr = response?.data?.data
+        setInventory(Array.isArray(arr) ? arr : [])
+      })
+      .catch((error) => {
+        console.error('Error fetching inventory:', error)
+        setInventory([])
+      })
   }, [])
 
   // Estadísticas de miembros
-  const totalMembers = members.length
-  const membersAlDia = members.filter((member) => member.estado === 'al_dia').length
-  const membersConDeuda = members.filter((member) => member.estado === 'con_deuda').length
+  const safeMembers = Array.isArray(members) ? members : []
+  const totalMembers = safeMembers.length
+  const membersAlDia = safeMembers.filter((member) => member.estado === 'al_dia').length
+  const membersConDeuda = safeMembers.filter((member) => member.estado === 'con_deuda').length
 
   // Estadísticas de empleados
-  const totalEmployees = employees.length
+  const safeEmployees = Array.isArray(employees) ? employees : []
+  const totalEmployees = safeEmployees.length
   const averageSalary = (
-    employees.reduce((sum, employee) => sum + parseFloat(employee.salario || 0), 0) /
-      totalEmployees || 0
+    safeEmployees.reduce((sum, employee) => sum + parseFloat(employee.salario || 0), 0) /
+      (totalEmployees || 1)
   ).toFixed(2)
-  const employeesByPosition = employees.reduce((acc, employee) => {
+  const employeesByPosition = safeEmployees.reduce((acc, employee) => {
     acc[employee.posicion] = (acc[employee.posicion] || 0) + 1
     return acc
   }, {})
 
   // Estadísticas de inventario
-  const totalInventoryItems = inventory.length
-  const inventoryByState = inventory.reduce(
+  const safeInventory = Array.isArray(inventory) ? inventory : []
+  const totalInventoryItems = safeInventory.length
+  const inventoryByState = safeInventory.reduce(
     (acc, item) => {
       acc[item.estado] = (acc[item.estado] || 0) + 1
       return acc
     },
     { Nuevo: 0, Usado: 0, Dañado: 0 },
   )
-  const inventoryByMovement = inventory.reduce(
+  const inventoryByMovement = safeInventory.reduce(
     (acc, item) => {
       acc[item.tipoMovimiento] = (acc[item.tipoMovimiento] || 0) + 1
       return acc
@@ -85,7 +100,7 @@ const Dashboard = () => {
             <CCardHeader>Miembros al Día</CCardHeader>
             <CCardBody>
               <h4>{membersAlDia}</h4>
-              <CProgress thin color="success" value={(membersAlDia / totalMembers) * 100} />
+              <CProgress thin color="success" value={(membersAlDia / (totalMembers || 1)) * 100} />
             </CCardBody>
           </CCard>
         </CCol>
@@ -94,7 +109,7 @@ const Dashboard = () => {
             <CCardHeader>Miembros con Deuda</CCardHeader>
             <CCardBody>
               <h4>{membersConDeuda}</h4>
-              <CProgress thin color="danger" value={(membersConDeuda / totalMembers) * 100} />
+              <CProgress thin color="danger" value={(membersConDeuda / (totalMembers || 1)) * 100} />
             </CCardBody>
           </CCard>
         </CCol>
@@ -142,7 +157,7 @@ const Dashboard = () => {
                   <CProgress
                     thin
                     color="secondary"
-                    value={(count / totalInventoryItems) * 100}
+                    value={(count / (totalInventoryItems || 1)) * 100}
                     className="mt-1"
                   />
                 </div>
@@ -160,7 +175,7 @@ const Dashboard = () => {
                   <CProgress
                     thin
                     color="warning"
-                    value={(count / totalInventoryItems) * 100}
+                    value={(count / (totalInventoryItems || 1)) * 100}
                     className="mt-1"
                   />
                 </div>

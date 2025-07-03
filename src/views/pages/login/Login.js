@@ -28,39 +28,35 @@ import unnamed from '../../../assets/images/unnamed.webp'
 import { authService, memberService } from '../../../services/api'
 
 const Login = () => {
-  const [username, setUsername] = useState('')
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [visible, setVisible] = useState(false)
   const navigate = useNavigate()
 
-  const Credentials = [{ username: 'admin', password: '1234' }]
-
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault()
     setLoading(true)
     setError('')
-
-    setTimeout(() => {
-      const founduser = Credentials.find(
-        (user) => user.username === username && user.password === password,
+    try {
+      const response = await authService.login({
+        email,
+        password
+      })
+      // Guardar token y usuario en localStorage
+      const { token, user, role } = response.data.msg
+      localStorage.setItem('token', token)
+      localStorage.setItem('user', JSON.stringify(user))
+      localStorage.setItem('role', role)
+      navigate('/dashboard')
+    } catch (err) {
+      setError(
+        err.response?.data?.msg || err.response?.data?.message || 'Credenciales inválidas'
       )
-
-      if (founduser) {
-        localStorage.setItem('isAuthenticated', 'true')
-        localStorage.setItem(
-          'user',
-          JSON.stringify({
-            username: founduser.username,
-          }),
-        )
-        navigate('/dashboard')
-      } else {
-        setError('Contraseña Incorrecta')
-      }
+    } finally {
       setLoading(false)
-    }, 1800)
+    }
   }
 
   const handleSaveMember = () => {
@@ -133,10 +129,10 @@ const Login = () => {
                         <CIcon icon={cilUser} />
                       </CInputGroupText>
                       <CFormInput
-                        placeholder="Username"
-                        autoComplete="username"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
+                        placeholder="Email"
+                        autoComplete="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                         required
                       />
                     </CInputGroup>
@@ -170,6 +166,13 @@ const Login = () => {
                         </CButton>
                         <CButton color="warning" onClick={() => setVisible(true)}>
                           Recuperar Contraseña
+                        </CButton>
+                      </CCol>
+                    </CRow>
+                    <CRow className="mt-3">
+                      <CCol xs={12} className="text-center">
+                        <CButton color="success" variant="outline" onClick={() => navigate('/register')}>
+                          ¿No tienes cuenta? Regístrate
                         </CButton>
                       </CCol>
                     </CRow>

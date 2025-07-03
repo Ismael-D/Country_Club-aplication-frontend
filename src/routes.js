@@ -1,4 +1,5 @@
 import React from 'react'
+// import Calendar from './views/modules/events/Calendar.jsx' // Eliminar esta línea
 
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 const Users = React.lazy(() => import('./views/users/Users'))
@@ -10,6 +11,7 @@ const Maintenance = React.lazy(() => import('./views/modules/maintenance/Mainten
 const Members = React.lazy(() => import('./views/modules/members/Members'))
 const inventory = React.lazy(() => import('./views/modules/inventory/Inventory'))
 const events = React.lazy(() => import('./views/modules/members/events'))
+const Calendar = React.lazy(() => import('./views/modules/events/Calendar.jsx'))
 
 const routes = [
   { path: '/', exact: true, name: 'Home' },
@@ -22,6 +24,7 @@ const routes = [
   { path: '/modules/members', name: 'Members', element: Members },
   { path: '/modules/inventory', name: 'Inventory', element: inventory },
   { path: '/modules/members/events', name: 'Events', element: events },
+  { path: '/eventos/calendario', element: <Calendar /> },
 ]
 
 export default routes

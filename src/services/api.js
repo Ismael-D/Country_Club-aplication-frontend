@@ -55,7 +55,7 @@ export const authService = {
 
 // Servicios de usuarios
 export const userService = {
-  getAll: () => api.get('/users'),
+  getAll: (params = {}) => api.get('/users', { params }),
   getById: (id) => api.get(`/users/${id}`),
   create: (userData) => api.post('/users', userData),
   update: (id, userData) => api.put(`/users/${id}`, userData),
@@ -130,6 +130,11 @@ export const reportService = {
   getMaintenanceReport: (params) => api.post('/reports/maintenance'),
   getFinancialReport: (params) => api.post('/reports/financial'),
   downloadReport: (reportId) => api.get(`/reports/download/${reportId}`),
+};
+
+// Servicios de tipos de evento
+export const eventTypeService = {
+  getAll: () => api.get('/event-types'),
 };
 
 export default api; 
