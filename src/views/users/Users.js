@@ -19,6 +19,7 @@ import {
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilPeople, cilPencil } from '@coreui/icons'
+import { userService } from '../../services/api'
 
 const Users = () => {
   const [users, setUsers] = useState([])
@@ -29,14 +30,7 @@ const Users = () => {
 
   useEffect(() => {
     console.log('Fetching users...')
-    fetch('http://localhost:3004/users')
-      .then((response) => {
-        console.log('Response status:', response.status)
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`)
-        }
-        return response.json()
-      })
+    userService.getAll()
       .then((data) => {
         console.log('Users data:', data)
         console.log('Users data length:', Array.isArray(data) ? data.length : 'Not an array')
@@ -62,23 +56,14 @@ const Users = () => {
     }
 
     if (currentUser.id) {
-      fetch(`http://localhost:3004/users/${currentUser.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(currentUser),
-      })
+      userService.update(currentUser.id, currentUser)
         .then(() => {
           setUsers((prev) => prev.map((user) => (user.id === currentUser.id ? currentUser : user)))
           setVisible(false)
         })
         .catch((error) => console.error('Error updating user:', error))
     } else {
-      fetch('http://localhost:3004/users', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(currentUser),
-      })
-        .then((response) => response.json())
+      userService.create(currentUser)
         .then((newUser) => {
           setUsers((prev) => [...prev, newUser])
           setVisible(false)
@@ -90,9 +75,7 @@ const Users = () => {
   const handleDeleteUser = (id) => {
     const confirmDelete = window.confirm('Are you sure you want to delete this user?')
     if (confirmDelete) {
-      fetch(`http://localhost:3004/users/${id}`, {
-        method: 'DELETE',
-      })
+      userService.delete(id)
         .then(() => {
           setUsers((prev) => prev.filter((user) => user.id !== id))
         })
@@ -112,11 +95,7 @@ const Users = () => {
     const updatedUser = users.find((user) => user.id === id)
     if (updatedUser) {
       updatedUser.status = newStatus
-      fetch(`http://localhost:3004/users/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updatedUser),
-      })
+      userService.update(id, updatedUser)
         .then(() => {
           setUsers((prev) => prev.map((user) => (user.id === id ? updatedUser : user)))
         })

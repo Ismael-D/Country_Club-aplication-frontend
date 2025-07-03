@@ -22,6 +22,7 @@ import {
 import CIcon from '@coreui/icons-react'
 import { cilPencil, cilUserUnfollow, cilCheckCircle } from '@coreui/icons'
 import { useNavigate } from 'react-router-dom' // Importar useNavigate
+import { memberService } from '../../services/api'
 
 const MembersApp = () => {
   const [members, setMembers] = useState([])
@@ -31,10 +32,8 @@ const MembersApp = () => {
   const [currentMember, setCurrentMember] = useState(null)
   const navigate = useNavigate() // Hook para manejar la navegación
 
-  // Fetch members from json-server (temporary for development)
   useEffect(() => {
-    fetch('http://localhost:3004/members')
-      .then((response) => response.json())
+    memberService.getAll()
       .then((data) => {
         const updatedMembers = data.map((member) => {
           const { deuda, estado } = calculateDebt(member.fechaPago)
@@ -89,11 +88,7 @@ const MembersApp = () => {
 
     if (updatedMember.id) {
       // Update existing member
-      fetch(`http://localhost:3004/members/${updatedMember.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updatedMember),
-      })
+      memberService.update(updatedMember.id, updatedMember)
         .then(() => {
           setMembers((prev) =>
             prev.map((member) => (member.id === updatedMember.id ? updatedMember : member)),
@@ -103,12 +98,7 @@ const MembersApp = () => {
         .catch((error) => console.error('Error updating member:', error))
     } else {
       // Add new member
-      fetch('http://localhost:3004/members', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updatedMember),
-      })
-        .then((response) => response.json())
+      memberService.create(updatedMember)
         .then((data) => {
           setMembers((prev) => [...prev, data])
           setShowModal(false)
@@ -125,19 +115,17 @@ const MembersApp = () => {
     setMembers(updatedMembers)
 
     const memberToUpdate = updatedMembers.find((member) => member.id === id)
-    fetch(`http://localhost:3004/members/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(memberToUpdate),
-    }).catch((error) => console.error('Error updating member:', error))
+    memberService.delete(id)
+      .then(() => {
+        setMembers((prev) => prev.filter((member) => member.id !== id))
+      })
+      .catch((error) => console.error('Error updating member:', error))
   }
 
   const handleDeleteMember = (id) => {
     const confirmDelete = window.confirm('¿Estás seguro de que deseas eliminar este miembro?')
     if (confirmDelete) {
-      fetch(`http://localhost:3004/members/${id}`, {
-        method: 'DELETE',
-      })
+      memberService.delete(id)
         .then(() => {
           setMembers((prev) => prev.filter((member) => member.id !== id))
         })

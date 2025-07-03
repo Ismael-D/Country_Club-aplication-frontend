@@ -1,14 +1,37 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { formatDate } from '@fullcalendar/core'
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
-import { INITIAL_EVENTS, createEventId } from './event-utils'
+import { eventService } from '../../services/api'
 
-export default function DemoApp() {
+export default function EventsApp() {
   const [weekendsVisible, setWeekendsVisible] = useState(true)
   const [currentEvents, setCurrentEvents] = useState([])
+  const [events, setEvents] = useState([])
+
+  useEffect(() => {
+    loadEvents()
+  }, [])
+
+  const loadEvents = () => {
+    eventService.getAll()
+      .then((data) => {
+        const calendarEvents = data.map(event => ({
+          id: event.id,
+          title: event.title,
+          start: event.start_date,
+          end: event.end_date,
+          allDay: event.all_day || false,
+          description: event.description,
+          location: event.location,
+          type: event.type
+        }))
+        setEvents(calendarEvents)
+      })
+      .catch((error) => console.error('Error fetching events:', error))
+  }
 
   function handleWeekendsToggle() {
     setWeekendsVisible(!weekendsVisible)
@@ -21,19 +44,31 @@ export default function DemoApp() {
     calendarApi.unselect() // clear date selection
 
     if (title) {
-      calendarApi.addEvent({
-        id: createEventId(),
+      const newEvent = {
         title,
-        start: selectInfo.startStr,
-        end: selectInfo.endStr,
-        allDay: selectInfo.allDay,
-      })
+        start_date: selectInfo.startStr,
+        end_date: selectInfo.endStr,
+        all_day: selectInfo.allDay,
+        description: '',
+        location: '',
+        type: 'general'
+      }
+
+      eventService.create(newEvent)
+        .then(() => {
+          loadEvents()
+        })
+        .catch((error) => console.error('Error creating event:', error))
     }
   }
 
   function handleEventClick(clickInfo) {
     if (confirm(`Are you sure you want to delete the event '${clickInfo.event.title}'`)) {
-      clickInfo.event.remove()
+      eventService.delete(clickInfo.event.id)
+        .then(() => {
+          loadEvents()
+        })
+        .catch((error) => console.error('Error deleting event:', error))
     }
   }
 
@@ -62,16 +97,11 @@ export default function DemoApp() {
           selectMirror={true}
           dayMaxEvents={true}
           weekends={weekendsVisible}
-          initialEvents={INITIAL_EVENTS} // alternatively, use the `events` setting to fetch from a feed
+          events={events}
           select={handleDateSelect}
-          eventContent={renderEventContent} // custom render function
+          eventContent={renderEventContent}
           eventClick={handleEventClick}
-          eventsSet={handleEvents} // called after events are initialized/added/changed/removed
-          /* you can update a remote database when these fire:
-          eventAdd={function(){}}
-          eventChange={function(){}}
-          eventRemove={function(){}}
-          */
+          eventsSet={handleEvents}
         />
       </div>
     </div>

@@ -25,6 +25,7 @@ import { cilLockLocked, cilUser } from '@coreui/icons'
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import unnamed from '../../../assets/images/unnamed.webp'
+import { authService, memberService } from '../../../services/api'
 
 const Login = () => {
   const [username, setUsername] = useState('')
@@ -73,11 +74,7 @@ const Login = () => {
     }
 
     if (currentMember.id) {
-      fetch(`http://localhost:3001/members/${currentMember.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(currentMember),
-      })
+      memberService.update(currentMember.id, currentMember)
         .then(() => {
           setMembers((prev) =>
             prev.map((member) => (member.id === currentMember.id ? currentMember : member)),
@@ -86,12 +83,7 @@ const Login = () => {
         })
         .catch((error) => console.error('Error updating member:', error))
     } else {
-      fetch('http://localhost:3001/members', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(currentMember),
-      })
-        .then((response) => response.json())
+      memberService.create(currentMember)
         .then((data) => {
           setMembers((prev) => [...prev, data])
           setShowModal(false)

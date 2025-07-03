@@ -22,6 +22,7 @@ import {
 import CIcon from '@coreui/icons-react'
 import { cilPencil, cilUserUnfollow } from '@coreui/icons'
 import { useNavigate } from 'react-router-dom'
+import { employeeService } from '../../services/api'
 
 const Employees = () => {
   const [employees, setEmployees] = useState([])
@@ -32,8 +33,7 @@ const Employees = () => {
   const navigate = useNavigate()
 
   useEffect(() => {
-    fetch('http://localhost:3004/employees')
-      .then((response) => response.json())
+    employeeService.getAll()
       .then((data) => setEmployees(data))
       .catch((error) => console.error('Error fetching employees:', error))
   }, [])
@@ -54,11 +54,7 @@ const Employees = () => {
   const handleSaveEmployee = () => {
     if (currentEmployee.id) {
       // Update existing employee
-      fetch(`http://localhost:3004/employees/${currentEmployee.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(currentEmployee),
-      })
+      employeeService.update(currentEmployee.id, currentEmployee)
         .then(() => {
           setEmployees((prev) =>
             prev.map((employee) =>
@@ -70,12 +66,7 @@ const Employees = () => {
         .catch((error) => console.error('Error updating employee:', error))
     } else {
       // Add new employee
-      fetch('http://localhost:3004/employees', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(currentEmployee),
-      })
-        .then((response) => response.json())
+      employeeService.create(currentEmployee)
         .then((data) => {
           setEmployees((prev) => [...prev, data])
           setShowModal(false)
@@ -87,9 +78,7 @@ const Employees = () => {
   const handleDeleteEmployee = (id) => {
     const confirmDelete = window.confirm('¿Estás seguro de que deseas eliminar este empleado?')
     if (confirmDelete) {
-      fetch(`http://localhost:3004/employees/${id}`, {
-        method: 'DELETE',
-      })
+      employeeService.delete(id)
         .then(() => {
           setEmployees((prev) => prev.filter((employee) => employee.id !== id))
         })

@@ -13,26 +13,23 @@ import {
   CTableHeaderCell,
   CTableRow,
 } from '@coreui/react'
+import { memberService, employeeService, inventoryService } from '../../services/api'
 
 const Dashboard = () => {
   const [members, setMembers] = useState([])
   const [employees, setEmployees] = useState([])
   const [inventory, setInventory] = useState([])
 
-  // Fetch data from json-server (temporary for development)
   useEffect(() => {
-    fetch('http://localhost:3004/members')
-      .then((response) => response.json())
+    memberService.getAll()
       .then((data) => setMembers(data))
       .catch((error) => console.error('Error fetching members:', error))
 
-    fetch('http://localhost:3004/employees')
-      .then((response) => response.json())
+    employeeService.getAll()
       .then((data) => setEmployees(data))
       .catch((error) => console.error('Error fetching employees:', error))
 
-    fetch('http://localhost:3004/inventory')
-      .then((response) => response.json())
+    inventoryService.getAll()
       .then((data) => setInventory(data))
       .catch((error) => console.error('Error fetching inventory:', error))
   }, [])

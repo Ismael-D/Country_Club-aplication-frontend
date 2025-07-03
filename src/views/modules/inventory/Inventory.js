@@ -21,6 +21,7 @@ import {
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilPencil, cilTrash } from '@coreui/icons'
+import { inventoryService } from '../../services/api'
 
 const Inventory = () => {
   const [inventory, setInventory] = useState([])
@@ -29,8 +30,7 @@ const Inventory = () => {
   const [currentItem, setCurrentItem] = useState(null)
 
   useEffect(() => {
-    fetch('http://localhost:3004/inventory')
-      .then((response) => response.json())
+    inventoryService.getAll()
       .then((data) => setInventory(data))
       .catch((error) => console.error('Error fetching inventory:', error))
   }, [])
@@ -50,11 +50,7 @@ const Inventory = () => {
 
   const handleSaveItem = () => {
     if (currentItem.id) {
-      fetch(`http://localhost:3004/inventory/${currentItem.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(currentItem),
-      })
+      inventoryService.update(currentItem.id, currentItem)
         .then(() => {
           setInventory((prev) =>
             prev.map((item) => (item.id === currentItem.id ? currentItem : item)),
@@ -64,12 +60,7 @@ const Inventory = () => {
         .catch((error) => console.error('Error updating item:', error))
     } else {
       // Add new item
-      fetch('http://localhost:3004/inventory', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(currentItem),
-      })
-        .then((response) => response.json())
+      inventoryService.create(currentItem)
         .then((data) => {
           setInventory((prev) => [...prev, data])
           setShowModal(false)
@@ -81,9 +72,7 @@ const Inventory = () => {
   const handleDeleteItem = (id) => {
     const confirmDelete = window.confirm('Are you sure you want to delete this item?')
     if (confirmDelete) {
-      fetch(`http://localhost:3004/inventory/${id}`, {
-        method: 'DELETE',
-      })
+      inventoryService.delete(id)
         .then(() => {
           setInventory((prev) => prev.filter((item) => item.id !== id))
         })
