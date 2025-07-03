@@ -23,7 +23,7 @@ import {
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilPencil, cilTrash, cilCheckCircle } from '@coreui/icons'
-import { maintenanceService } from '../../services/api'
+import { maintenanceService } from "src/services/api"
 
 const Maintenance = () => {
   const [maintenance, setMaintenance] = useState([])
@@ -31,15 +31,52 @@ const Maintenance = () => {
   const [filterStatus, setFilterStatus] = useState('all')
   const [showModal, setShowModal] = useState(false)
   const [currentTask, setCurrentTask] = useState(null)
+  const [error, setError] = useState(null)
+  const [categories] = useState([
+    { value: 'climatizacion', label: 'Climatización' },
+    { value: 'electricidad', label: 'Electricidad' },
+    { value: 'plomeria', label: 'Plomería' },
+    { value: 'limpieza', label: 'Limpieza' },
+    { value: 'jardineria', label: 'Jardinería' },
+    { value: 'otros', label: 'Otros' },
+  ])
+  const [employees, setEmployees] = useState([])
 
   useEffect(() => {
     loadMaintenance()
+    loadEmployees()
   }, [])
 
   const loadMaintenance = () => {
     maintenanceService.getAll()
-      .then((data) => setMaintenance(data))
-      .catch((error) => console.error('Error fetching maintenance:', error))
+      .then((response) => {
+        let tasksArr = [];
+        if (Array.isArray(response.data)) {
+          tasksArr = response.data;
+        } else if (response.data && Array.isArray(response.data.data)) {
+          tasksArr = response.data.data;
+        }
+        setMaintenance(tasksArr)
+      })
+      .catch((error) => {
+        setError('Error al cargar tareas de mantenimiento')
+        setMaintenance([])
+        console.error('Error fetching maintenance:', error)
+      })
+  }
+
+  const loadEmployees = () => {
+    import('src/services/api').then(({ employeeService }) => {
+      employeeService.getAll().then((response) => {
+        let employeesArr = [];
+        if (Array.isArray(response.data)) {
+          employeesArr = response.data;
+        } else if (response.data && Array.isArray(response.data.data)) {
+          employeesArr = response.data.data;
+        }
+        setEmployees(employeesArr)
+      }).catch(() => setEmployees([]))
+    })
   }
 
   const handleAddTask = () => {
@@ -47,24 +84,34 @@ const Maintenance = () => {
       title: '',
       description: '',
       priority: 'medium',
-      status: 'pending',
+      category: '',
       assigned_to: '',
       estimated_cost: '',
       location: '',
+      scheduled_date: '',
     })
     setShowModal(true)
   }
 
   const handleSaveTask = () => {
+    // Al crear, no enviar status y asegurarse de enviar los campos requeridos
+    const taskToSend = { ...currentTask }
+    if (!taskToSend.id) {
+      delete taskToSend.status // No enviar status al crear
+    }
+    // Convertir assigned_to a número si es posible
+    if (taskToSend.assigned_to) {
+      taskToSend.assigned_to = Number(taskToSend.assigned_to)
+    }
     if (currentTask.id) {
-      maintenanceService.update(currentTask.id, currentTask)
+      maintenanceService.update(currentTask.id, taskToSend)
         .then(() => {
           loadMaintenance()
           setShowModal(false)
         })
         .catch((error) => console.error('Error updating task:', error))
     } else {
-      maintenanceService.create(currentTask)
+      maintenanceService.create(taskToSend)
         .then(() => {
           loadMaintenance()
           setShowModal(false)
@@ -125,6 +172,11 @@ const Maintenance = () => {
 
   return (
     <>
+      {error && (
+        <div className="alert alert-danger" role="alert">
+          {error}
+        </div>
+      )}
       <CCard className="mb-4">
         <CCardHeader>Mantenimiento</CCardHeader>
         <CCardBody>
@@ -164,6 +216,11 @@ const Maintenance = () => {
               </tr>
             </thead>
             <tbody>
+              {filteredMaintenance.length === 0 && !error && (
+                <tr>
+                  <td colSpan="8" className="text-center">No hay tareas de mantenimiento para mostrar.</td>
+                </tr>
+              )}
               {filteredMaintenance.map((task) => (
                 <tr key={task.id}>
                   <td>{task.title}</td>
@@ -223,6 +280,7 @@ const Maintenance = () => {
                   name="title"
                   value={currentTask.title}
                   onChange={handleInputChange}
+                  required
                 />
               </div>
               <div className="mb-3">
@@ -232,6 +290,7 @@ const Maintenance = () => {
                   value={currentTask.description}
                   onChange={handleInputChange}
                   rows={3}
+                  required
                 />
               </div>
               <div className="mb-3">
@@ -247,26 +306,32 @@ const Maintenance = () => {
                 </CFormSelect>
               </div>
               <div className="mb-3">
-                <CFormLabel>Estado</CFormLabel>
+                <CFormLabel>Categoría</CFormLabel>
                 <CFormSelect
-                  name="status"
-                  value={currentTask.status}
+                  name="category"
+                  value={currentTask.category}
                   onChange={handleInputChange}
+                  required
                 >
-                  <option value="pending">Pendiente</option>
-                  <option value="in_progress">En progreso</option>
-                  <option value="completed">Completado</option>
-                  <option value="cancelled">Cancelado</option>
+                  <option value="">Selecciona una categoría</option>
+                  {categories.map((cat) => (
+                    <option key={cat.value} value={cat.value}>{cat.label}</option>
+                  ))}
                 </CFormSelect>
               </div>
               <div className="mb-3">
                 <CFormLabel>Asignado a</CFormLabel>
-                <CFormInput
-                  type="text"
+                <CFormSelect
                   name="assigned_to"
                   value={currentTask.assigned_to}
                   onChange={handleInputChange}
-                />
+                  required
+                >
+                  <option value="">Selecciona un empleado</option>
+                  {employees.map((emp) => (
+                    <option key={emp.id} value={emp.id}>{emp.name || emp.full_name || emp.email}</option>
+                  ))}
+                </CFormSelect>
               </div>
               <div className="mb-3">
                 <CFormLabel>Costo Estimado</CFormLabel>
@@ -284,6 +349,16 @@ const Maintenance = () => {
                   name="location"
                   value={currentTask.location}
                   onChange={handleInputChange}
+                />
+              </div>
+              <div className="mb-3">
+                <CFormLabel>Fecha Programada</CFormLabel>
+                <CFormInput
+                  type="date"
+                  name="scheduled_date"
+                  value={currentTask.scheduled_date}
+                  onChange={handleInputChange}
+                  required
                 />
               </div>
             </CForm>

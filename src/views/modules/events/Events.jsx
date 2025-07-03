@@ -21,6 +21,8 @@ export default function EventsApp() {
     event_type_id: '',
     description: '',
   })
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [showEditModal, setShowEditModal] = useState(false);
 
   useEffect(() => {
     loadEvents()
@@ -111,13 +113,45 @@ export default function EventsApp() {
   }
 
   function handleEventClick(clickInfo) {
-    if (window.confirm(`Are you sure you want to delete the event '${clickInfo.event.title}'`)) {
-      eventService.delete(clickInfo.event.id)
-        .then(() => {
-          loadEvents()
-        })
-        .catch((error) => console.error('Error deleting event:', error))
+    setSelectedEvent({
+      id: clickInfo.event.id,
+      name: clickInfo.event.title,
+      date: clickInfo.event.startStr,
+      end_date: clickInfo.event.endStr,
+      location: clickInfo.event.extendedProps.location,
+      event_type_id: clickInfo.event.extendedProps.event_type_id,
+      description: clickInfo.event.extendedProps.description,
+      status: clickInfo.event.extendedProps.status,
+      organizer_id: clickInfo.event.extendedProps.organizer_id,
+    });
+    setShowEditModal(true);
+  }
+
+  function handleUpdateEvent(e) {
+    e.preventDefault();
+    if (!selectedEvent.name || !selectedEvent.date || !selectedEvent.location || !selectedEvent.event_type_id) {
+      alert('Completa todos los campos requeridos.');
+      return;
     }
+    const payload = { ...selectedEvent };
+    delete payload.id;
+    if (!payload.end_date) {
+      delete payload.end_date;
+    }
+    payload.event_type_id = Number(payload.event_type_id);
+    eventService.update(selectedEvent.id, payload)
+      .then(() => {
+        setShowEditModal(false);
+        loadEvents();
+      })
+      .catch(error => {
+        if (error.response) {
+          alert('Error actualizando evento: ' + JSON.stringify(error.response.data));
+        } else {
+          alert('Error actualizando evento');
+        }
+        console.error(error);
+      });
   }
 
   function handleEvents(events) {
@@ -159,18 +193,18 @@ export default function EventsApp() {
               />
             </Form.Group>
             <Form.Group className="mb-3">
-              <Form.Label>Fecha de inicio</Form.Label>
+              <Form.Label>Fecha y hora de inicio</Form.Label>
               <Form.Control
-                type="date"
+                type="datetime-local"
                 value={form.date}
                 onChange={e => setForm(f => ({ ...f, date: e.target.value }))}
                 required
               />
             </Form.Group>
             <Form.Group className="mb-3">
-              <Form.Label>Fecha de fin</Form.Label>
+              <Form.Label>Fecha y hora de fin</Form.Label>
               <Form.Control
-                type="date"
+                type="datetime-local"
                 value={form.end_date}
                 onChange={e => setForm(f => ({ ...f, end_date: e.target.value }))}
               />
@@ -212,6 +246,91 @@ export default function EventsApp() {
             </Button>
             <Button variant="primary" type="submit">
               Crear
+            </Button>
+          </Modal.Footer>
+        </Form>
+      </Modal>
+      <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Editar Evento</Modal.Title>
+        </Modal.Header>
+        <Form onSubmit={handleUpdateEvent}>
+          <Modal.Body>
+            <Form.Group className="mb-3">
+              <Form.Label>Nombre del evento</Form.Label>
+              <Form.Control
+                type="text"
+                value={selectedEvent?.name || ''}
+                onChange={e => setSelectedEvent(ev => ({ ...ev, name: e.target.value }))}
+                required
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Fecha y hora de inicio</Form.Label>
+              <Form.Control
+                type="datetime-local"
+                value={selectedEvent?.date ? selectedEvent.date.substring(0, 16) : ''}
+                onChange={e => setSelectedEvent(ev => ({ ...ev, date: e.target.value }))}
+                required
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Fecha y hora de fin</Form.Label>
+              <Form.Control
+                type="datetime-local"
+                value={selectedEvent?.end_date ? selectedEvent.end_date.substring(0, 16) : ''}
+                onChange={e => setSelectedEvent(ev => ({ ...ev, end_date: e.target.value }))}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Ubicación</Form.Label>
+              <Form.Control
+                type="text"
+                value={selectedEvent?.location || ''}
+                onChange={e => setSelectedEvent(ev => ({ ...ev, location: e.target.value }))}
+                required
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Tipo de evento</Form.Label>
+              <Form.Select
+                value={selectedEvent?.event_type_id || ''}
+                onChange={e => setSelectedEvent(ev => ({ ...ev, event_type_id: e.target.value }))}
+                required
+              >
+                <option value="">Selecciona un tipo</option>
+                {eventTypes.map(type => (
+                  <option key={type.id} value={type.id}>{type.name}</option>
+                ))}
+              </Form.Select>
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Descripción</Form.Label>
+              <Form.Control
+                as="textarea"
+                value={selectedEvent?.description || ''}
+                onChange={e => setSelectedEvent(ev => ({ ...ev, description: e.target.value }))}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Estado</Form.Label>
+              <Form.Select
+                value={selectedEvent?.status || 'scheduled'}
+                onChange={e => setSelectedEvent(ev => ({ ...ev, status: e.target.value }))}
+              >
+                <option value="scheduled">Programado</option>
+                <option value="ongoing">En curso</option>
+                <option value="completed">Completado</option>
+                <option value="canceled">Cancelado</option>
+              </Form.Select>
+            </Form.Group>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={() => setShowEditModal(false)}>
+              Cancelar
+            </Button>
+            <Button variant="primary" type="submit">
+              Guardar Cambios
             </Button>
           </Modal.Footer>
         </Form>

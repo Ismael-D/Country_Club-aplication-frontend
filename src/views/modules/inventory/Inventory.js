@@ -21,7 +21,7 @@ import {
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilPencil, cilTrash } from '@coreui/icons'
-import { inventoryService } from '../../services/api'
+import { inventoryService } from "src/services/api"
 
 const Inventory = () => {
   const [inventory, setInventory] = useState([])

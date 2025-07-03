@@ -22,7 +22,7 @@ import {
 import CIcon from '@coreui/icons-react'
 import { cilPencil, cilUserUnfollow, cilCheckCircle } from '@coreui/icons'
 import { useNavigate } from 'react-router-dom' // Importar useNavigate
-import { memberService } from '../../services/api'
+import { memberService } from "src/services/api"
 
 const MembersApp = () => {
   const [members, setMembers] = useState([])
@@ -31,21 +31,39 @@ const MembersApp = () => {
   const [showModal, setShowModal] = useState(false)
   const [currentMember, setCurrentMember] = useState(null)
   const navigate = useNavigate() // Hook para manejar la navegación
+  const [error, setError] = useState(null)
 
   useEffect(() => {
     memberService.getAll()
-      .then((data) => {
-        const updatedMembers = data.map((member) => {
-          const { deuda, estado } = calculateDebt(member.fechaPago)
+      .then((response) => {
+        let membersArr = [];
+        if (Array.isArray(response.data)) {
+          membersArr = response.data;
+        } else if (response.data && Array.isArray(response.data.members)) {
+          membersArr = response.data.members;
+        }
+        // Mapear los campos del backend a los del frontend
+        const updatedMembers = membersArr.map((member) => {
+          const { deuda, estado } = calculateDebt(member.last_payment_date || member.fechaPago);
           return {
-            ...member,
+            id: member.id,
+            nombres: member.first_name,
+            apellidos: member.last_name,
+            dni: member.DNI ? String(member.DNI) : '',
+            correo: member.email,
+            telefono: member.phone,
+            fechaPago: member.last_payment_date || '',
             deuda,
             estado,
           }
-        })
+        });
         setMembers(updatedMembers)
       })
-      .catch((error) => console.error('Error fetching members:', error))
+      .catch((error) => {
+        setError('Error al cargar miembros')
+        setMembers([])
+        console.error('Error fetching members:', error)
+      })
   }, [])
 
   const calculateDebt = (fechaPago) => {
@@ -161,6 +179,11 @@ const MembersApp = () => {
 
   return (
     <>
+      {error && (
+        <div className="alert alert-danger" role="alert">
+          {error}
+        </div>
+      )}
       <CCard className="mb-4">
         <CCardHeader>Lista de Miembros</CCardHeader>
         <CCardBody>
@@ -199,6 +222,11 @@ const MembersApp = () => {
               </tr>
             </thead>
             <tbody>
+              {filteredMembers.length === 0 && !error && (
+                <tr>
+                  <td colSpan="8" className="text-center">No hay miembros para mostrar.</td>
+                </tr>
+              )}
               {filteredMembers.map((member) => (
                 <tr key={member.id}>
                   <td>{`${member.nombres} ${member.apellidos}`}</td>

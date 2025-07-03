@@ -22,7 +22,7 @@ import {
 import CIcon from '@coreui/icons-react'
 import { cilPencil, cilUserUnfollow } from '@coreui/icons'
 import { useNavigate } from 'react-router-dom'
-import { employeeService } from '../../services/api'
+import { employeeService } from "src/services/api"
 
 const Employees = () => {
   const [employees, setEmployees] = useState([])
@@ -30,12 +30,17 @@ const Employees = () => {
   const [filterType, setFilterType] = useState('name')
   const [showModal, setShowModal] = useState(false)
   const [currentEmployee, setCurrentEmployee] = useState(null)
+  const [error, setError] = useState(null)
   const navigate = useNavigate()
 
   useEffect(() => {
     employeeService.getAll()
       .then((data) => setEmployees(data))
-      .catch((error) => console.error('Error fetching employees:', error))
+      .catch((error) => {
+        setError('Error al cargar empleados')
+        setEmployees([])
+        console.error('Error fetching employees:', error)
+      })
   }, [])
 
   const handleAddEmployee = () => {
@@ -112,6 +117,11 @@ const Employees = () => {
 
   return (
     <>
+      {error && (
+        <div className="alert alert-danger" role="alert">
+          {error}
+        </div>
+      )}
       <CCard className="mb-4">
         <CCardHeader>Lista de Empleados</CCardHeader>
         <CCardBody>
@@ -148,6 +158,11 @@ const Employees = () => {
               </tr>
             </thead>
             <tbody>
+              {filteredEmployees.length === 0 && !error && (
+                <tr>
+                  <td colSpan="7" className="text-center">No hay empleados para mostrar.</td>
+                </tr>
+              )}
               {filteredEmployees.map((employee) => (
                 <tr key={employee.id}>
                   <td>{`${employee.nombres} ${employee.apellidos}`}</td>
