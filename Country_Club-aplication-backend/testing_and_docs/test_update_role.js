@@ -1,0 +1,1 @@
+const BASE_URL = 'https://country-club-aplication-backend.onrender.com/api/v1' 
